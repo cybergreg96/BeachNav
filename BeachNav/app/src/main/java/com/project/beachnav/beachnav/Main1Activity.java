@@ -1,5 +1,4 @@
 package com.project.beachnav.beachnav;
-
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -30,11 +29,9 @@ public class Main1Activity extends AppCompatActivity {
     }
 
     public static class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-
         private GoogleMap mMap;
         private LatLngBounds CSULB_Bounds = new LatLngBounds(
                 new LatLng(33.765, -118.124241), new LatLng(33.785, -118.108));
-
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -64,9 +61,6 @@ public class Main1Activity extends AppCompatActivity {
             mMap.setMinZoomPreference(15.0f);
             mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
 
-
         }
-
-
     }
 }
