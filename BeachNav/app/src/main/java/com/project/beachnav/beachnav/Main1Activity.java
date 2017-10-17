@@ -20,14 +20,14 @@ public class Main1Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main1);
-        new Handler().postDelayed(new Runnable(){
-    @Override
-            public void run(){
-        Intent homeIntent = new Intent(Main1Activity.this, MapsActivity.class);
-        startActivity(homeIntent);
-        finish();
-    }
+        setContentView(R.layout.activity_splash);
+        new Handler().postDelayed(new Runnable() {
+        @Override
+            public void run() {
+                Intent homeIntent = new Intent(Main1Activity.this, MapsActivity.class);
+                startActivity(homeIntent);
+            finish();
+            }
         },SPLASH_TIME_OUT);
     }
 
