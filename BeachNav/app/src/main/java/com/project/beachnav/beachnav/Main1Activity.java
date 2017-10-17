@@ -43,7 +43,7 @@ public class Main1Activity extends AppCompatActivity {
             setContentView(R.layout.activity_maps);
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.map);
+                    .findFragmentById(R.id.BN_map);
             mapFragment.getMapAsync(this);
 
         }
@@ -66,10 +66,10 @@ public class Main1Activity extends AppCompatActivity {
             mMap.setMinZoomPreference(15.0f);
             mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
             LatLng CSULB = new LatLng(33.7816, -118.1155);
-            GroundOverlayOptions newarkMap = new GroundOverlayOptions()
+            GroundOverlayOptions csulbMap = new GroundOverlayOptions()
                     .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016))
                     .position(CSULB, 1200f, 1500f);
-            mMap.addGroundOverlay(newarkMap);
+            mMap.addGroundOverlay(csulbMap);
 
         }
 
