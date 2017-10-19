@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -41,6 +42,9 @@ public class Main1Activity extends AppCompatActivity {
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_maps);
+
+
+
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.BN_map);
@@ -65,11 +69,12 @@ public class Main1Activity extends AppCompatActivity {
             sett.setScrollGesturesEnabled(true);
             mMap.setMinZoomPreference(15.0f);
             mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
-            LatLng CSULB = new LatLng(33.7816, -118.1155);
+            LatLng CSULB = new LatLng(33.782, -118.116);
             GroundOverlayOptions csulbMap = new GroundOverlayOptions()
                     .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016))
-                    .position(CSULB, 1200f, 1500f);
+                    .position(CSULB, 1570f, 1520f);
             mMap.addGroundOverlay(csulbMap);
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
 
         }
 
