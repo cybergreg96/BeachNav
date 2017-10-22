@@ -1,10 +1,17 @@
 package com.project.beachnav.beachnav;
 
+import android.Manifest;
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -15,21 +22,26 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.List;
 
 public class Main1Activity extends AppCompatActivity {
     private static int SPLASH_TIME_OUT = 2000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         new Handler().postDelayed(new Runnable() {
-        @Override
+            @Override
             public void run() {
                 Intent homeIntent = new Intent(Main1Activity.this, MapsActivity.class);
                 startActivity(homeIntent);
-            finish();
+                finish();
             }
-        },SPLASH_TIME_OUT);
+        }, SPLASH_TIME_OUT);
     }
 
     public static class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -43,14 +55,46 @@ public class Main1Activity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_maps);
 
-
-
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.BN_map);
             mapFragment.getMapAsync(this);
 
         }
+
+        /**
+         * Will show current location on the map when 'wya?' button is tapped.
+         * (Mapped to button from activity_maps -> click the button -> onClick in expanded Properties)
+         * (All this needs now is the permissions for the location)
+         */
+        public void findLocation(View v) {
+//            mMap.setMyLocationEnabled(true);
+        }
+
+        /**
+         * *Not fully worked out yet, but it's a start.*
+         * Will find a location that matches the search item as best as possible.
+         * (Mapped to search dialog the same way findLocation was to that button)
+         */
+        public void onSearch(View v) {
+            EditText location_tf = (EditText) findViewById(R.id.editText);
+            String location = location_tf.getText().toString();
+            List<Address> addressList = null;
+
+            if (location != null || location.equals("")) {
+                Geocoder geocoder = new Geocoder(this);
+                try {
+                    addressList = geocoder.getFromLocationName(location, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Address address = addressList.get(0);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            }
+        }
+
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -75,6 +119,18 @@ public class Main1Activity extends AppCompatActivity {
                     .position(CSULB, 1570f, 1520f);
             mMap.addGroundOverlay(csulbMap);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                mMap.setMyLocationEnabled(true);
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
 
         }
 

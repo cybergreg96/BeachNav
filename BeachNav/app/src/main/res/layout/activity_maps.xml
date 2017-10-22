@@ -36,13 +36,15 @@
             android:layout_width="175dp"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:text="Go!" />
+            android:onClick="onSearch"
+            android:text="Find" />
 
         <Button
             android:id="@+id/location"
             android:layout_width="175dp"
             android:layout_height="wrap_content"
             android:layout_weight="4"
+            android:onClick="findLocation"
             android:text="wya?" />
 
         <Button
