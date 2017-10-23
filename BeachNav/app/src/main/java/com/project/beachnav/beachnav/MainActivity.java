@@ -1,13 +1,10 @@
 package com.project.beachnav.beachnav;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -27,7 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.List;
 
-public class Main1Activity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
     private static int SPLASH_TIME_OUT = 2000;
 
     @Override
@@ -37,7 +34,7 @@ public class Main1Activity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent homeIntent = new Intent(Main1Activity.this, MapsActivity.class);
+                Intent homeIntent = new Intent(MainActivity.this, MapsActivity.class);
                 startActivity(homeIntent);
                 finish();
             }
@@ -72,9 +69,10 @@ public class Main1Activity extends AppCompatActivity {
         }
 
         /**
-         * *Not fully worked out yet, but it's a start.*
          * Will find a location that matches the search item as best as possible.
          * (Mapped to search dialog the same way findLocation was to that button)
+         * ..we need to be able to handle anything that the search dialog can give
+         *  -> auto-suggestions from a database?
          */
         public void onSearch(View v) {
             EditText location_tf = (EditText) findViewById(R.id.editText);
@@ -120,17 +118,19 @@ public class Main1Activity extends AppCompatActivity {
             mMap.addGroundOverlay(csulbMap);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
 
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                mMap.setMyLocationEnabled(true);
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+//                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                // TODO: Consider calling
+//                //    ActivityCompat#requestPermissions
+//                // here to request the missing permissions, and then overriding
+//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                mMap.setMyLocationEnabled(true);
+//                //                                          int[] grantResults)
+//                // to handle the case where the user grants the permission. See the documentation
+//                // for ActivityCompat#requestPermissions for more details.
+//                return;
+//            }
 
         }
 

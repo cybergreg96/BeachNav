@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:layout_weight="5"
         android:id="@+id/BN.map"
-        tools:context=".Main1Activity$MapsActivity"
+        tools:context=".MainActivity$MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
     <LinearLayout
