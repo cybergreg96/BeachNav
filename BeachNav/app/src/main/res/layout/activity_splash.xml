@@ -9,7 +9,7 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp"
     android:background="#ff000000"
-    tools:context="com.project.beachnav.beachnav.Main1Activity">
+    tools:context=".MainActivity">
 
 
     <TextView

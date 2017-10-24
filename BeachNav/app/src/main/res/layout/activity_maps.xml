@@ -1,8 +1,59 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.project.beachnav.beachnav.Main1Activity$MapsActivity" />
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:id="@+id/BN.map"
+        tools:context=".MainActivity$MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="275dp"
+            android:layout_height="75dp"
+            android:layout_weight="4"
+            android:ems="10"
+            android:inputType="text"
+            android:text="Where ya goin'?"
+            android:visibility="visible"
+            tools:text="Where do you want to go?" />
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:onClick="onSearch"
+            android:text="Find" />
+
+        <Button
+            android:id="@+id/location"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:onClick="findLocation"
+            android:text="wya?" />
+
+        <Button
+            android:id="@+id/zoom"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:text="Zoom" />
+    </LinearLayout>
+
+
+</LinearLayout>
