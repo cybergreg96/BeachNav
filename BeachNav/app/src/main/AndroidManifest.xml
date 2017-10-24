@@ -33,16 +33,27 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        <activity android:name=".MainActivity">
+
+        <activity android:name=".SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--<activity android:name=".MainActivity">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
         <activity
-            android:name=".MainActivity$MapsActivity"
-            android:label="@string/title_activity_maps">
+            android:name=".MainActivity$MapsActivity">
+            <!--android:label="@string/title_activity_maps">-->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
