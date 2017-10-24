@@ -23,7 +23,7 @@
         <EditText
             android:id="@+id/editText"
             android:layout_width="275dp"
-            android:layout_height="75dp"
+            android:layout_height="55dp"
             android:layout_weight="4"
             android:ems="10"
             android:inputType="text"
@@ -33,26 +33,26 @@
 
         <Button
             android:id="@+id/search"
-            android:layout_width="175dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:onClick="onSearch"
-            android:text="Find" />
+            android:drawableStart="@android:drawable/ic_menu_search" />
 
         <Button
             android:id="@+id/location"
-            android:layout_width="175dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:onClick="findLocation"
-            android:text="wya?" />
+            android:drawableStart="@android:drawable/ic_menu_mylocation" />
 
         <Button
             android:id="@+id/zoom"
-            android:layout_width="175dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:text="Zoom" />
+            android:drawableStart="@android:drawable/ic_notification_clear_all" />
     </LinearLayout>
 
 
