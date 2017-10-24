@@ -1,6 +1,6 @@
 package com.project.beachnav.beachnav;
 
-
+// 10/22/2017 - Austin Tao
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

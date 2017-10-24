@@ -59,16 +59,15 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        /**
-         * Will show current location on the map when 'wya?' button is tapped.
+        /** 10/21/2017 - Austin Tao
+         * Will show current location on the map when location button is tapped.
          * (Mapped to button from activity_maps -> click the button -> onClick in expanded Properties)
          * (All this needs now is the permissions for the location)
          */
         public void findLocation(View v) {
 //            mMap.setMyLocationEnabled(true);
         }
-
-        /**
+        /** 10/21/2017 - Austin Tao
          * Will find a location that matches the search item as best as possible.
          * (Mapped to search dialog the same way findLocation was to that button)
          * ..we need to be able to handle anything that the search dialog can give

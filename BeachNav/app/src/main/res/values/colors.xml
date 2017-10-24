@@ -3,5 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="background">#444440</color> <!--The color used in drawable/splash-->
+    <color name="background">#444440</color> <!--10/23/2017 - Austin Tao
+                                               The color used in drawable/splash-->
 </resources>

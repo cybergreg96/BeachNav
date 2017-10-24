@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 10/23/2017 - Austin Tao -->
+
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:drawable="@color/background"/>
