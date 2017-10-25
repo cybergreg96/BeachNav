@@ -5,69 +5,84 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <!--<SearchView-->
+        <!--android:id="@+id/search_location"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="100dp"-->
+        <!--android:layout_weight="5"-->
+        <!--android:iconifiedByDefault="false"-->
+        <!--android:keyboardNavigationCluster="false"-->
+        <!--android:queryHint="What are you looking for?" />-->
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="5"
-        android:id="@+id/BN.map"
-        tools:context=".MainActivity$MapsActivity"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        android:layout_height="wrap_content"
+        android:layout_weight="5">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="275dp"
-            android:layout_height="55dp"
-            android:layout_weight="4"
-            android:ems="10"
-            android:inputType="text"
-            android:text="Where ya goin'?"
-            android:visibility="visible"
-            tools:text="Where do you want to go?" />
-
-        <Button
-            android:id="@+id/search"
-            android:layout_width="wrap_content"
+        <fragment
+            android:id="@+id/BN.map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:onClick="onSearch"
-            android:drawableStart="@android:drawable/ic_menu_search" />
+            tools:context=".MainActivity$MapsActivity" />
 
-        <Button
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:onClick="findLocation"
-            android:drawableStart="@android:drawable/ic_menu_mylocation" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/find_location"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:clickable="true"
+            map:backgroundTint="?attr/actionModeSplitBackground"
+            map:elevation="0dp"
+            map:fabSize="mini"
+            map:srcCompat="@android:drawable/ic_menu_mylocation" />
+    </FrameLayout>
 
-        <Button
-            android:id="@+id/clear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:drawableStart="@android:drawable/ic_notification_clear_all" />
-    </LinearLayout>
-
-    <SearchView
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:clickable="true"
-        map:fabSize="mini"
-        map:srcCompat="@android:drawable/ic_menu_directions" />
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="horizontal">-->
 
+        <!--<EditText-->
+            <!--android:id="@+id/editText"-->
+            <!--android:layout_width="275dp"-->
+            <!--android:layout_height="55dp"-->
+            <!--android:layout_weight="4"-->
+            <!--android:ems="10"-->
+            <!--android:inputType="text"-->
+            <!--android:text="Where ya goin'?"-->
+            <!--android:visibility="visible"-->
+            <!--tools:text="Where do you want to go?" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/search"-->
+            <!--android:layout_width="40dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:drawableStart="@android:drawable/ic_menu_search"-->
+            <!--android:onClick="onSearch" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/location"-->
+            <!--android:layout_width="55dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerHorizontal="true"-->
+            <!--android:drawableStart="@android:drawable/ic_menu_mylocation"-->
+            <!--android:onClick="findLocation" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/clear"-->
+            <!--android:layout_width="55dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="4"-->
+            <!--android:drawableStart="@android:drawable/ic_notification_clear_all"-->
+            <!--android:layout_centerHorizontal="true"/>-->
+    <!--</LinearLayout>-->
 
 </LinearLayout>
