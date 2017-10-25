@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
                     .position(CSULB, 1570f, 1520f);
             mMap.addGroundOverlay(csulbMap);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
-            instantiateMap();
+//            instantiateMap();
 
 //            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
