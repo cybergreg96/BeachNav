@@ -1,0 +1,256 @@
+package com.project.beachnav.beachnav;
+
+import android.app.SearchManager;
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by Austin on 10/25/2017.
+ */
+
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private GoogleMap mMap;
+    private LatLngBounds CSULB_Bounds = new LatLngBounds(
+            new LatLng(33.765, -118.124241), new LatLng(33.785, -118.108));
+
+    /*
+    * 10/24/2017 - Carl Costa
+    */
+    private Map<String, LatLng> mapPlaces = new HashMap<>();
+    /**
+     * Instantiates the map
+     * this method hardcodes all the keys for all the places in CSULB
+     */
+    protected void instantiateMap(){
+        //LOWER CAMPUS
+        //ECS
+        mapPlaces.put("ECS", new LatLng(33.783529, -118.110287) );
+        mapPlaces.put("Computer Science", new LatLng(33.783529, -118.110287));
+        mapPlaces.put("CECS", new LatLng(33.783529, -118.110287));
+        mapPlaces.put("Computer Engineering", new LatLng(33.783529, -118.110287));
+        mapPlaces.put("Computer Engineering Computer Science", new LatLng(33.783529, -118.110287));
+        //EN2
+        mapPlaces.put("EN2", new LatLng(33.783215, -118.110925));
+        mapPlaces.put("Engineering 2", new LatLng(33.783215, -118.110925));
+        //EN3
+        mapPlaces.put("EN3", new LatLng(33.783694, -118.111157));
+        mapPlaces.put("Engineering 3", new LatLng(33.783694, -118.111157));
+        //EN4
+        mapPlaces.put("EN4", new LatLng(33.783681, -118.110674));
+        mapPlaces.put("Engineering 4", new LatLng(33.783681, -118.110674));
+        //VEC
+        mapPlaces.put("VEC", new LatLng(33.782818, -118.110636));
+        mapPlaces.put("Vivian Engineering Center", new LatLng(33.782818, -118.110636));
+        //Outpost
+        mapPlaces.put("Outpost", new LatLng(33.782340, -118.110410));
+        mapPlaces.put("The Outpost", new LatLng(33.782340, -118.110410));
+        mapPlaces.put("OP", new LatLng(33.782340, -118.110410));
+        //SSPA
+        mapPlaces.put("SPA", new LatLng(33.782017, -118.110383));
+        mapPlaces.put("SSPA", new LatLng(33.782017, -118.110383));
+        mapPlaces.put("SS/PA", new LatLng(33.782017, -118.110383));
+        mapPlaces.put("School of Social Work", new LatLng(33.782017, -118.110383));
+        mapPlaces.put("School of Social Work/Public Affairs", new LatLng(33.782017, -118.110383));
+        //Horn Center
+        mapPlaces.put("HC", new LatLng(33.783444, -118.113983));
+        mapPlaces.put("Horn Center", new LatLng(33.783444, -118.113983));
+        mapPlaces.put("Horn", new LatLng(33.783444, -118.113983));
+        mapPlaces.put("Computer Lab", new LatLng(33.783444, -118.113983));
+        mapPlaces.put("Open Access Computer Lab", new LatLng(33.783444, -118.113983));
+        //UAM University Art Museum
+        mapPlaces.put("UAM",new LatLng(33.783425, -118.114629));
+        mapPlaces.put("University Art Museum",new LatLng(33.783425, -118.114629));
+        mapPlaces.put("Museum",new LatLng(33.783425, -118.114629));
+        //KIN
+        mapPlaces.put("KIN", new LatLng(33.782898, -118.112586));
+        mapPlaces.put("Kinesiology", new LatLng(33.782898, -118.112586));
+        //SRWC
+        mapPlaces.put("SRWC", new LatLng(33.785038, -118.109484));
+        mapPlaces.put("Student Recreation and Wellness Center", new LatLng(33.785038, -118.109484));
+        mapPlaces.put("Recreation and Wellness Center", new LatLng(33.785038, -118.109484));
+        //HHS1 (Health and Human Services)
+        mapPlaces.put("HHS1", new LatLng(33.782388, -118.112801));
+        mapPlaces.put("Health and Human Services 1", new LatLng(33.782388, -118.112801));
+        mapPlaces.put("Health Human Services 1", new LatLng(33.782388, -118.112801));
+        mapPlaces.put("Human Services 1", new LatLng(33.782388, -118.112801));
+        //HHS2
+        mapPlaces.put("HHS2", new LatLng(33.782384, -118.112125));
+        mapPlaces.put("Health and Human Services 2", new LatLng(33.782384, -118.112125));
+        mapPlaces.put("Health Human Services 2", new LatLng(33.782384, -118.112125));
+        mapPlaces.put("Human Services 2", new LatLng(33.782384, -118.112125));
+        //Health Human Services (in general)
+        mapPlaces.put("Health and Human Services", new LatLng(33.782326, -118.112490));
+        mapPlaces.put("HHS",new LatLng(33.782326, -118.112490));
+        mapPlaces.put("Human Services",new LatLng(33.782326, -118.112490));
+        mapPlaces.put("Health Human Services", new LatLng(33.782326, -118.112490));
+        //BH
+        mapPlaces.put("Brotman Hall", new LatLng(33.782659, -118.115339));
+        mapPlaces.put("BH", new LatLng(33.782659, -118.115339));
+        //TODO: add other names
+        //UPPER CAMPUS
+        mapPlaces.put("USU", new LatLng(33.781281, -118.113450)); //USU
+        mapPlaces.put("CP", new LatLng(33.781316, -118.112386)); //CP Central Plant (Lego)
+        mapPlaces.put("CAFE", new LatLng(33.780574, -118.114071)); //CAFE
+        mapPlaces.put("BKS", new LatLng(33.779974, -118.114158)); //BKS Book Store
+        mapPlaces.put("MLSC", new LatLng(33.780301, -118.112488)); //MLSC Molecular Science
+        mapPlaces.put("HSCI", new LatLng(33.779830, -118.112639)); //HSCI Hall of Science
+        mapPlaces.put("MIC", new LatLng(33.779429, -118.111720)); //MIC Microbiology
+        mapPlaces.put("PH1", new LatLng(33.778898, -118.112505)); //PH1
+        mapPlaces.put("PH2", new LatLng(33.779272, -118.112482)); //PH2 Peterson Hall 2
+        mapPlaces.put("FA1", new LatLng(33.777211, -118.112557)); //FA 1
+        mapPlaces.put("FA2", new LatLng(33.777474, -118.112361)); //FA 2
+        mapPlaces.put("FA3", new LatLng(33.777935, -118.112311)); //FA 3
+        mapPlaces.put("FA4", new LatLng(33.778336, -118.112741)); //FA4 fine arts 4
+        mapPlaces.put("UT", new LatLng(33.776733, -118.112113)); //UT University Theatre?
+        mapPlaces.put("UTC", new LatLng(33.776735, -118.111652)); //UTC University Theatre Center?
+        mapPlaces.put("TA", new LatLng(33.776510, -118.112639)); //TA Theatre Arts Building
+        mapPlaces.put("MHB", new LatLng(33.776882, -118.113202)); //MHB Macintosh Building, The Toaster?
+        mapPlaces.put("AS", new LatLng(33.777009, -118.114096)); //AS ??
+        mapPlaces.put("LIB", new LatLng(33.777207, -118.114842)); //LIB Library
+        mapPlaces.put("LA1", new LatLng(33.777664, -118.114713)); //LA1
+        mapPlaces.put("LA2", new LatLng(33.777987, -118.114547)); //LA2
+        mapPlaces.put("LA3", new LatLng(33.778292, -118.114440)); //LA3
+        mapPlaces.put("LA4", new LatLng(33.778566, -118.114338)); //LA4
+        mapPlaces.put("LA5", new LatLng(33.778898, -118.114241)); //LA5
+        mapPlaces.put("LH", new LatLng(33.778187, -118.113976)); //LH Lecture Hall
+        mapPlaces.put("CLA", new LatLng(33.777815, -118.114132)); //CLA ???
+        mapPlaces.put("PSY", new LatLng(33.779318, -118.114439)); //PSY Psychology
+        mapPlaces.put("ED2", new LatLng(33.775727, -118.114354)); //ED2 the outer edge of the campus
+        mapPlaces.put("EED", new LatLng(33.776224, -118.114156)); //EED
+        mapPlaces.put("MMC", new LatLng(33.776768, -118.114561)); //MMC Multimedia Center
+        mapPlaces.put("ANNEX", new LatLng(33.777081, -118.111909)); //ANNEX (???)
+        mapPlaces.put("LAB", new LatLng(33.776887, -118.112687)); //LAB Language Arts Building
+        mapPlaces.put("FO2", new LatLng(33.778497, -118.113910)); //FO2
+        mapPlaces.put("FO3", new LatLng(33.779128, -118.113688)); //FO3
+        mapPlaces.put("FO4", new LatLng(33.778202, -118.111990)); //FO4 Faculty Office 4
+        mapPlaces.put("FO5", new LatLng(33.779103, -118.112462)); //FO5 Faculty Office 5
+
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps);
+        Toolbar menu_toolbar = (Toolbar) findViewById(R.id.menu_toolbar);
+        setSupportActionBar(menu_toolbar);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.BN_map);
+        mapFragment.getMapAsync(this);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_location).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.settings: return true;
+            case R.id.help: return true;
+            default: return super.onOptionsItemSelected(item);
+        }
+    }
+
+//    /**
+//     * Will show current location on the map when 'wya?' button is tapped.
+//     * (Mapped to button from activity_maps -> click the button -> onClick in expanded Properties)
+//     * (All this needs now is the permissions for the location)
+//     */
+//    public void findLocation(View v) {
+//            mMap.setMyLocationEnabled(true);
+//    }
+//
+//        /**
+//     * Will find a location that matches the search item as best as possible.
+//     * (Mapped to search dialog the same way findLocation was to that button)
+//     * ..we need to be able to handle anything that the search dialog can give
+//     *  -> auto-suggestions from a database?
+//     */
+//    public void onSearch(View v) {
+//        EditText location_tf = (EditText) findViewById(R.id.editText);
+//        String location = location_tf.getText().toString();
+//        List<Address> addressList = null;
+//
+//        if (location != null || location.equals("")) {
+//            Geocoder geocoder = new Geocoder(this);
+//            try {
+//                addressList = geocoder.getFromLocationName(location, 1);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            Address address = addressList.get(0);
+//            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+//            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+//            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+//        }
+//    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker within CSULB.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        UiSettings sett = mMap.getUiSettings();
+        sett.isMyLocationButtonEnabled();
+        sett.setZoomControlsEnabled(true);
+        sett.setScrollGesturesEnabled(true);
+        mMap.setMinZoomPreference(15.0f);
+        mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
+        LatLng CSULB = new LatLng(33.782, -118.116);
+        GroundOverlayOptions csulbMap = new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016))
+                .position(CSULB, 1570f, 1520f);
+        mMap.addGroundOverlay(csulbMap);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
+//            instantiateMap();
+
+//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+//                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+//  TODO: Consider calling
+//                //    ActivityCompat#requestPermissions
+//                // here to request the missing permissions, and then overriding
+//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//                mMap.setMyLocationEnabled(true);
+//                //                                          int[] grantResults)
+//                // to handle the case where the user grants the permission. See the documentation
+//                // for ActivityCompat#requestPermissions for more details.
+//                return;
+//            }
+    }
+}
