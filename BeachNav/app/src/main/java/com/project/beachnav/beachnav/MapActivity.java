@@ -49,7 +49,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     /**
      * Instantiates the map
      * this method hardcodes all the keys for all the places in CSULB
-
+    */
     protected void initializePathOverlay() {
         Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>());
         Node en2 = new Node("EN2",33.783215, -118.110925, new ArrayList<Node>());
@@ -138,7 +138,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("CP", cp);
         mapPlaces.put("Central Plant", cp);
         mapPlaces.put("Huge Stairs", cp);
-        //CAFE
+        //CAFE, etc
         mapPlaces.put("CAFE", cafe);
         mapPlaces.put("Nugget", cafe);
         mapPlaces.put("beachwalk", cafe);
@@ -168,16 +168,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("Peterson Hall two", ph2);
         //FA 1
         mapPlaces.put("FA1",fa1);
+        mapPlaces.put("Fine Arts 1", fa1);
         //FA 2
         mapPlaces.put("FA2",fa2);
+        mapPlaces.put("Fine Arts 2", fa2);
         //FA 3
         mapPlaces.put("FA3", fa3);
+        mapPlaces.put("Fine Arts 3", fa3);
         //FA4 fine arts 4
         mapPlaces.put("FA4",fa4);
-        //UT University Theatre?
+        mapPlaces.put("Fine Arts 4", fa4);
+        //UT University Theatre
         mapPlaces.put("UT", ut);
-        //UTC University Theatre Center?
+        //UTC University Telecommunications
         mapPlaces.put("UTC", utc);
+        mapPlaces.put("University Telecommunications", utc);
         //TA Theatre Arts Building
         mapPlaces.put("TA", ta);
         //MHB Macintosh Building, The Toaster?
@@ -186,8 +191,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("Macintosh", mhb);
         mapPlaces.put("Toaster", mhb);
         mapPlaces.put("The Toaster", mhb);
-        //AS ??
-        mapPlaces.put("AS", as);
+        //AS - Academic Services
+        mapPlaces.put("Academic Services", as);
         //LIB Library
         mapPlaces.put("LIB", lib);
         mapPlaces.put("Library", lib);
@@ -209,8 +214,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //LH Lecture Hall
         mapPlaces.put("LH", lh);
         mapPlaces.put("Lecture Hall", lh);
-        //CLA ???
+        //CLA
         mapPlaces.put("CLA", cla);
+        mapPlaces.put("College of Liberal Arts", cla);
         //PSY Psychology
         mapPlaces.put("PSY", psy);
         mapPlaces.put("Psychology", psy);
@@ -218,23 +224,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("ED2", ed2);
         mapPlaces.put("Education 2", ed2);
         //EED
-        mapPlaces.put("EED", eed);
+        mapPlaces.put("ED1", eed);
+        mapPlaces.put("Education 1", eed);
         //MMC Multimedia Center
         mapPlaces.put("MMC", mmc);
         mapPlaces.put("Multimedia Center", mmc);
         //ANNEX (???)
-        mapPlaces.put("ANNEX", annex);
+        mapPlaces.put("Art Annex", annex);
         //LAB Language Arts Building
         mapPlaces.put("LAB",lab);
         mapPlaces.put("Language Arts Building",lab);
         //FO2
         mapPlaces.put("FO2", fo2);
+        mapPlaces.put("Faculty Office 2", fo2);
         //FO3
         mapPlaces.put("FO3", fo3);
+        mapPlaces.put("Faculty Office 3", fo3);
         //FO4 Faculty Office 4
         mapPlaces.put("FO4", fo4);
+        mapPlaces.put("Faculty Office 4", fo4);
         //FO5 Faculty Office 5
         mapPlaces.put("FO5", fo5);
+        mapPlaces.put("Faculty Office 5", fo5);
         //LOWER CAMPUS
         //ECS
         mapPlaces.put("ECS", ecs);
