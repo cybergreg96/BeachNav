@@ -1,15 +1,20 @@
 package com.project.beachnav.beachnav;
 
+/**
+ * @author Austin Leavitt
+ * 11/2/2017
+ * node class
+ */
+
 import java.util.ArrayList;
 import java.lang.Math;
-/**
- * Created by Austin on 11/4/2017.
- */
+
 public class Node {
     String label;
     double lat;
     double lng;
     ArrayList<Node> adjacent;
+
 
     public Node() {
         label = "";
@@ -74,6 +79,7 @@ public class Node {
         }
         System.out.println(current.getLabel());
         path.add(current);
+
         return path;
     }
 
@@ -106,3 +112,4 @@ public class Node {
         return label;
     }
 }
+

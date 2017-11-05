@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,13 +42,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     /*
     * 10/24/2017 - Carl Costa
+    * The plan is to change this to Map<String, Node>
+    *     where the node
     */
     private Map<String, Node> mapPlaces = new HashMap<>();
     /**
      * Instantiates the map
      * this method hardcodes all the keys for all the places in CSULB
-     */
-    protected void initializePathOverlay(){
+
+    protected void initializePathOverlay() {
         Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>());
         Node en2 = new Node("EN2",33.783215, -118.110925, new ArrayList<Node>());
         //EN3
@@ -335,12 +338,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //        }
 //    }
 
-//    /**
-//     * Will find a location that matches the search item as best as possible.
-//     * (Mapped to search dialog the same way findLocation was to that button)
-//     * ..we need to be able to handle anything that the search dialog can give
-//     *  -> auto-suggestions from a database?
-//     */
+   /**
+    * Will find a location that matches the search item as best as possible.
+    * (Mapped to search dialog the same way findLocation was to that button)
+    * ..we need to be able to handle anything that the search dialog can give
+    *  -> auto-suggestions from a database?
+    */
     public void onSearch(View v) {
         EditText location_tf = (EditText) findViewById(R.id.editText);
         String location = location_tf.getText().toString();
