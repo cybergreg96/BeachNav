@@ -1,15 +1,14 @@
 package com.project.beachnav.beachnav;
 
-import android.app.SearchManager;
-import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,9 +18,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,6 +37,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LatLngBounds CSULB_Bounds = new LatLngBounds(
             new LatLng(33.775, -118.124241), new LatLng(33.788698, -118.108));
 
+    private LocationManager locationManager;
+    private GoogleApiClient googleApiClient;
+
     /*
     * 10/24/2017 - Carl Costa
     * The plan is to change this to Map<String, Node>
@@ -43,8 +49,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     /**
      * Instantiates the map
      * this method hardcodes all the keys for all the places in CSULB
-     */
-    protected void instantiateMap(){
+
+    protected void initializePathOverlay() {
         Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>());
         Node en2 = new Node("EN2",33.783215, -118.110925, new ArrayList<Node>());
         //EN3
@@ -294,12 +300,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("Brotman Hall", bh);
         mapPlaces.put("BH", bh);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        Toolbar menu_toolbar = (Toolbar) findViewById(R.id.menu_toolbar);
-        setSupportActionBar(menu_toolbar);
+
+        setContentView(R.layout.activity_maps_searchbox);
+
+//        setContentView(R.layout.activity_maps_searchbar);
+//        Toolbar menu_toolbar = (Toolbar) findViewById(R.id.menu_toolbar);
+//        setSupportActionBar(menu_toolbar);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -308,58 +318,50 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_location).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
-            case R.id.settings: return true;
-            case R.id.help: return true;
-            default: return super.onOptionsItemSelected(item);
-        }
-    }
-
-//    /**
-//     * Will show current location on the map when 'wya?' button is tapped.
-//     * (Mapped to button from activity_maps -> click the button -> onClick in expanded Properties)
-//     * (All this needs now is the permissions for the location)
-//     */
-//    public void findLocation(View v) {
-//            mMap.setMyLocationEnabled(true);
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.options_menu, menu);
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView = (SearchView) menu.findItem(R.id.search_location).getActionView();
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        return true;
 //    }
-//
-//        /**
-//     * Will find a location that matches the search item as best as possible.
-//     * (Mapped to search dialog the same way findLocation was to that button)
-//     * ..we need to be able to handle anything that the search dialog can give
-//     *  -> auto-suggestions from a database?
-//     */
-//    public void onSearch(View v) {
-//        EditText location_tf = (EditText) findViewById(R.id.editText);
-//        String location = location_tf.getText().toString();
-//        List<Address> addressList = null;
-//
-//        if (location != null || location.equals("")) {
-//            Geocoder geocoder = new Geocoder(this);
-//            try {
-//                addressList = geocoder.getFromLocationName(location, 1);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            Address address = addressList.get(0);
-//            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-//            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
-//            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch(item.getItemId()){
+//            case R.id.current_location: Toast.makeText(getApplicationContext(), "Location", Toast.LENGTH_SHORT).show(); return true;
+//            case R.id.settings: Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show(); return true;
+//            case R.id.help: Toast.makeText(getApplicationContext(), "Help", Toast.LENGTH_SHORT).show(); return true;
+//            default: return super.onOptionsItemSelected(item);
 //        }
 //    }
+
+   /**
+    * Will find a location that matches the search item as best as possible.
+    * (Mapped to search dialog the same way findLocation was to that button)
+    * ..we need to be able to handle anything that the search dialog can give
+    *  -> auto-suggestions from a database?
+    */
+    public void onSearch(View v) {
+        EditText location_tf = (EditText) findViewById(R.id.editText);
+        String location = location_tf.getText().toString();
+        List<Address> addressList = null;
+
+        if (location != null || location.equals("")) {
+            Geocoder geocoder = new Geocoder(this);
+            try {
+                addressList = geocoder.getFromLocationName(location, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Address address = addressList.get(0);
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        }
+    }
 
     /**
      * Manipulates the map once available.
@@ -375,7 +377,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap = googleMap;
         UiSettings sett = mMap.getUiSettings();
         sett.isMyLocationButtonEnabled();
-        sett.setZoomControlsEnabled(true);
+        sett.setZoomControlsEnabled(false);
         sett.setScrollGesturesEnabled(true);
         mMap.setMinZoomPreference(15.0f);
         mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
@@ -385,20 +387,29 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .position(CSULB, 1570f, 1520f);
         mMap.addGroundOverlay(csulbMap);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
-//            instantiateMap();
+        initializePathOverlay();
 
-//            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-//                 Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-//  TODO: Consider calling
-//                //    ActivityCompat#requestPermissions
-//                // here to request the missing permissions, and then overriding
-//                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                mMap.setMyLocationEnabled(true);
-//                //                                          int[] grantResults)
-//                // to handle the case where the user grants the permission. See the documentation
-//                // for ActivityCompat#requestPermissions for more details.
-//                return;
-//            }
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+////      TODO: Consider calling
+//            return;
+//        }
+//        mMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }
