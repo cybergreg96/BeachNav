@@ -32,7 +32,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private LatLngBounds CSULB_Bounds = new LatLngBounds(
-            new LatLng(33.765, -118.124241), new LatLng(33.785, -118.108));
+            new LatLng(33.775, -118.124241), new LatLng(33.788698, -118.108));
 
     /*
     * 10/24/2017 - Carl Costa
