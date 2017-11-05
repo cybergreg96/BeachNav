@@ -18,22 +18,28 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
         <EditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
-            android:layout_height="55dp"
+            android:layout_height="42dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="2dp"
             android:layout_weight="2.5"
+            android:background="@color/colorAccent"
             android:backgroundTint="@color/colorPrimary"
             android:elevation="0dp"
             android:ems="10"
             android:hint="@string/menu_search_hint"
             android:inputType="text"
-            android:textColor="@color/colorPrimary"
+            android:paddingStart="5dp"
+            android:textColor="@color/colorAccent"
+            android:textColorHint="@color/colorAccent"
             android:visibility="visible" />
 
         <Button
