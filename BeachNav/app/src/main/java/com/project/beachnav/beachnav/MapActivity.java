@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,116 +37,262 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     /*
     * 10/24/2017 - Carl Costa
     */
-    private Map<String, LatLng> mapPlaces = new HashMap<>();
+    private Map<String, Node> mapPlaces = new HashMap<>();
     /**
      * Instantiates the map
      * this method hardcodes all the keys for all the places in CSULB
      */
     protected void instantiateMap(){
+        Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>());
+        Node en2 = new Node("EN2",33.783215, -118.110925, new ArrayList<Node>());
+        //EN3
+        Node en3 = new Node("EN3", 33.783694, -118.111157, new ArrayList<Node>());
+        //new LatLng(33.783681, -118.110674
+        Node en4 = new Node("EN4",33.783681, -118.110674, new ArrayList<Node>());
+        // VEC
+        Node vec = new Node("VEC",33.782818, -118.110636, new ArrayList<Node>());
+        //Outpost
+        Node outpost = new Node("Outpost",33.782340, -118.110410, new ArrayList<Node>());
+        //SSPA
+        Node sspa = new Node ("SSPA", 33.782017, -118.110383, new ArrayList<Node>());
+        //HC
+        Node HC = new Node("Horn Center",33.783444, -118.113983, new ArrayList<Node>());
+        //UAM
+        Node UAM = new Node("Museum", 33.783425, -118.114629, new ArrayList<Node>());
+        //KIN
+        Node kin = new Node("Kinesiology", 33.782898, -118.112586, new ArrayList<Node>());
+        //srwc
+        Node srwc = new Node("srwc",33.785038, -118.109484,new ArrayList<Node>());
+        //hhs1
+        Node hhs1 = new Node("hhs1",33.782388, -118.112801,new ArrayList<Node>());
+        //hhs2
+        Node hhs2 = new Node("hhs2", 33.782384, -118.112125, new ArrayList<Node>());
+        //Health and Human Services (GENERAL LOCATION)
+        Node hhsGnrl = new Node("hhs", 33.782326, -118.112490, new ArrayList<Node>());
+        //Brotman Hall
+        Node bh = new Node("Brotman Hall",33.782659, -118.115339, new ArrayList<Node>());
+        //University Student Union
+        Node usu = new Node("Student Union",33.781281, -118.113450, new ArrayList<Node>());
+        //Lego/Central Plant
+        Node cp = new Node("Central Plant",33.781316, -118.112386, new ArrayList<Node>());
+        //cafe
+        Node cafe = new Node("Cafe",33.780574, -118.114071, new ArrayList<Node>());
+        //Bookstore
+        Node bks = new Node("Bookstore",33.779974, -118.114158,new ArrayList<Node>());
+        //Molecular Science
+        Node mlsc = new Node("Molecular Science",33.780301, -118.112488,new ArrayList<Node>());
+        //Hall of Science
+        Node hsci = new Node("Hall of Science",33.779830, -118.112639,new ArrayList<Node>());
+        //Microbiology
+        Node mic = new Node("Microbiology",33.779429, -118.111720, new ArrayList<Node>());
+        //Peterson Hall 1
+        Node ph1 = new Node("Peterson Hall 1",33.778898, -118.112505, new ArrayList<Node>());
+        //Peterson Hall 2
+        Node ph2 = new Node("Peterson Hall 2",33.779272, -118.112482, new ArrayList<Node>());
+        //FA1
+        Node fa1 = new Node("FA1",33.777211, -118.112557, new ArrayList<Node>());
+        //FA2
+        Node fa2 = new Node("FA2",33.777474, -118.112361, new ArrayList<Node>());
+        //FA3
+        Node fa3 = new Node("FA3",33.777935, -118.112311, new ArrayList<Node>());
+        //FA4
+        Node fa4 = new Node("FA4",33.778336, -118.112741, new ArrayList<Node>());
+        //UT
+        Node ut = new Node("University Theatre",33.776733, -118.112113,new ArrayList<Node>());
+        Node utc = new Node("UTC", 33.776735, -118.111652,new ArrayList<Node>());
+        Node ta = new Node("TA",33.776510, -118.112639,new ArrayList<Node>());
+        Node mhb = new Node("Macintosh Building",33.776882, -118.113202,new ArrayList<Node>());
+        Node as = new Node("as", 33.777009, -118.114096, new ArrayList<Node>());
+        Node lib = new Node("Library", 33.777207, -118.114842, new ArrayList<Node>());
+        Node la1 = new Node("Liberal Arts 1", 33.777664, -118.114713, new ArrayList<Node>());
+        Node la2 = new Node("Liberal Arts 2",33.777987, -118.114547,new ArrayList<Node>());
+        Node la3 = new Node("Liberal Arts 3",33.778292, -118.114440,new ArrayList<Node>());
+        Node la4 = new Node("Liberal Arts 4",33.778566, -118.114338,new ArrayList<Node>());
+        Node la5 = new Node("Liberal Arts 5",33.778898, -118.114241,new ArrayList<Node>());
+        Node lh = new Node("Lecture Hall",33.778187, -118.113976,new ArrayList<Node>());
+        Node cla = new Node("CLA",33.777815, -118.114132,new ArrayList<Node>());
+        Node psy = new Node("Psychology",33.779318, -118.114439,new ArrayList<Node>());
+        Node ed2 = new Node("Education 2",33.775727, -118.114354,new ArrayList<Node>());
+        Node eed = new Node("EED",33.776224, -118.114156,new ArrayList<Node>());
+        Node mmc = new Node("Multimedia Center",33.776768, -118.114561,new ArrayList<Node>());
+        Node annex = new Node("ANNEX",33.777081, -118.111909,new ArrayList<Node>());
+        Node lab = new Node("Language Arts Building",33.776887, -118.112687, new ArrayList<Node>());
+        Node fo2 = new Node("Faculty Office 2",33.778497, -118.113910,new ArrayList<Node>());
+        Node fo3 = new Node("Faculty Office 3",33.779128, -118.113688,new ArrayList<Node>());
+        Node fo4 = new Node("Faculty Office 3",33.778202, -118.111990,new ArrayList<Node>());
+        Node fo5 = new Node("Faculty Office 3",33.779103, -118.112462,new ArrayList<Node>());
+        //UPPER CAMPUS
+        //USU
+        mapPlaces.put("USU", usu);
+        mapPlaces.put("University Student Union", usu);
+        mapPlaces.put("Student Union", usu);
+        //CP Central Plant (Lego)
+        mapPlaces.put("CP", cp);
+        mapPlaces.put("Central Plant", cp);
+        mapPlaces.put("Huge Stairs", cp);
+        //CAFE
+        mapPlaces.put("CAFE", cafe);
+        mapPlaces.put("Nugget", cafe);
+        mapPlaces.put("beachwalk", cafe);
+        //BKS Book Store
+        mapPlaces.put("BKS", bks);
+        mapPlaces.put("Book Store", bks);
+        mapPlaces.put("University Bookstore", bks);
+        mapPlaces.put("Bookstore", bks);
+        //MLSC Molecular Science
+        mapPlaces.put("MLSC", mlsc);
+        mapPlaces.put("Molecular Science", mlsc);
+        mapPlaces.put("Molecular Science Building", mlsc);
+        //HSCI Hall of Science
+        mapPlaces.put("HSCI", hsci);
+        mapPlaces.put("Hall of Science", hsci);
+        //MIC Microbiology
+        mapPlaces.put("MIC", mic);
+        mapPlaces.put("Microbiology", mic);
+        mapPlaces.put("Micro Biology", mic);
+        //PH1
+        mapPlaces.put("PH1", ph1);
+        mapPlaces.put("Peterson Hall 1", ph1);
+        mapPlaces.put("Peterson Hall one", ph1);
+        //PH2 Peterson Hall 2
+        mapPlaces.put("PH2", ph2);
+        mapPlaces.put("Peterson Hall 2", ph2);
+        mapPlaces.put("Peterson Hall two", ph2);
+        //FA 1
+        mapPlaces.put("FA1",fa1);
+        //FA 2
+        mapPlaces.put("FA2",fa2);
+        //FA 3
+        mapPlaces.put("FA3", fa3);
+        //FA4 fine arts 4
+        mapPlaces.put("FA4",fa4);
+        //UT University Theatre?
+        mapPlaces.put("UT", ut);
+        //UTC University Theatre Center?
+        mapPlaces.put("UTC", utc);
+        //TA Theatre Arts Building
+        mapPlaces.put("TA", ta);
+        //MHB Macintosh Building, The Toaster?
+        mapPlaces.put("MHB", mhb);
+        mapPlaces.put("Macintosh Building", mhb);
+        mapPlaces.put("Macintosh", mhb);
+        mapPlaces.put("Toaster", mhb);
+        mapPlaces.put("The Toaster", mhb);
+        //AS ??
+        mapPlaces.put("AS", as);
+        //LIB Library
+        mapPlaces.put("LIB", lib);
+        mapPlaces.put("Library", lib);
+        //LA1
+        mapPlaces.put("LA1", la1);
+        mapPlaces.put("Liberal Arts 1", la1);
+        //LA2
+        mapPlaces.put("LA2",la2);
+        mapPlaces.put("Liberal Arts 2", la2);
+        //LA3
+        mapPlaces.put("LA3",la3);
+        mapPlaces.put("Liberal Arts 3", la3);
+        //LA4
+        mapPlaces.put("LA4",la4);
+        mapPlaces.put("Liberal Arts 4", la4);
+        //LA5
+        mapPlaces.put("LA5",la5);
+        mapPlaces.put("Liberal Arts 5", la5);
+        //LH Lecture Hall
+        mapPlaces.put("LH", lh);
+        mapPlaces.put("Lecture Hall", lh);
+        //CLA ???
+        mapPlaces.put("CLA", cla);
+        //PSY Psychology
+        mapPlaces.put("PSY", psy);
+        mapPlaces.put("Psychology", psy);
+        //ED2 the outer edge of the campus
+        mapPlaces.put("ED2", ed2);
+        mapPlaces.put("Education 2", ed2);
+        //EED
+        mapPlaces.put("EED", eed);
+        //MMC Multimedia Center
+        mapPlaces.put("MMC", mmc);
+        mapPlaces.put("Multimedia Center", mmc);
+        //ANNEX (???)
+        mapPlaces.put("ANNEX", annex);
+        //LAB Language Arts Building
+        mapPlaces.put("LAB",lab);
+        mapPlaces.put("Language Arts Building",lab);
+        //FO2
+        mapPlaces.put("FO2", fo2);
+        //FO3
+        mapPlaces.put("FO3", fo3);
+        //FO4 Faculty Office 4
+        mapPlaces.put("FO4", fo4);
+        //FO5 Faculty Office 5
+        mapPlaces.put("FO5", fo5);
         //LOWER CAMPUS
         //ECS
-        mapPlaces.put("ECS", new LatLng(33.783529, -118.110287) );
-        mapPlaces.put("Computer Science", new LatLng(33.783529, -118.110287));
-        mapPlaces.put("CECS", new LatLng(33.783529, -118.110287));
-        mapPlaces.put("Computer Engineering", new LatLng(33.783529, -118.110287));
-        mapPlaces.put("Computer Engineering Computer Science", new LatLng(33.783529, -118.110287));
+        mapPlaces.put("ECS", ecs);
+        mapPlaces.put("Computer Science", ecs);
+        mapPlaces.put("CECS", ecs);
+        mapPlaces.put("Computer Engineering", ecs);
+        mapPlaces.put("Computer Engineering Computer Science", ecs);
         //EN2
-        mapPlaces.put("EN2", new LatLng(33.783215, -118.110925));
-        mapPlaces.put("Engineering 2", new LatLng(33.783215, -118.110925));
+        mapPlaces.put("EN2", en2);
+        mapPlaces.put("Engineering 2", en2);
         //EN3
-        mapPlaces.put("EN3", new LatLng(33.783694, -118.111157));
-        mapPlaces.put("Engineering 3", new LatLng(33.783694, -118.111157));
+        mapPlaces.put("EN3", en3);
+        mapPlaces.put("Engineering 3", en3);
         //EN4
-        mapPlaces.put("EN4", new LatLng(33.783681, -118.110674));
-        mapPlaces.put("Engineering 4", new LatLng(33.783681, -118.110674));
+        mapPlaces.put("EN4", en4);
+        mapPlaces.put("Engineering 4", en4);
         //VEC
-        mapPlaces.put("VEC", new LatLng(33.782818, -118.110636));
-        mapPlaces.put("Vivian Engineering Center", new LatLng(33.782818, -118.110636));
+        mapPlaces.put("VEC", vec);
+        mapPlaces.put("Vivian Engineering Center", vec);
         //Outpost
-        mapPlaces.put("Outpost", new LatLng(33.782340, -118.110410));
-        mapPlaces.put("The Outpost", new LatLng(33.782340, -118.110410));
-        mapPlaces.put("OP", new LatLng(33.782340, -118.110410));
+        mapPlaces.put("Outpost", outpost);
+        mapPlaces.put("The Outpost", outpost);
+        mapPlaces.put("OP", outpost);
         //SSPA
-        mapPlaces.put("SPA", new LatLng(33.782017, -118.110383));
-        mapPlaces.put("SSPA", new LatLng(33.782017, -118.110383));
-        mapPlaces.put("SS/PA", new LatLng(33.782017, -118.110383));
-        mapPlaces.put("School of Social Work", new LatLng(33.782017, -118.110383));
-        mapPlaces.put("School of Social Work/Public Affairs", new LatLng(33.782017, -118.110383));
+        mapPlaces.put("SPA", sspa);
+        mapPlaces.put("SSPA", sspa);
+        mapPlaces.put("SS/PA", sspa);
+        mapPlaces.put("School of Social Work", sspa);
+        mapPlaces.put("School of Social Work/Public Affairs", sspa);
         //Horn Center
-        mapPlaces.put("HC", new LatLng(33.783444, -118.113983));
-        mapPlaces.put("Horn Center", new LatLng(33.783444, -118.113983));
-        mapPlaces.put("Horn", new LatLng(33.783444, -118.113983));
-        mapPlaces.put("Computer Lab", new LatLng(33.783444, -118.113983));
-        mapPlaces.put("Open Access Computer Lab", new LatLng(33.783444, -118.113983));
+        mapPlaces.put("HC", HC);
+        mapPlaces.put("Horn Center", HC);
+        mapPlaces.put("Horn", HC);
+        mapPlaces.put("Computer Lab", HC);
+        mapPlaces.put("Open Access Computer Lab", HC);
         //UAM University Art Museum
-        mapPlaces.put("UAM",new LatLng(33.783425, -118.114629));
-        mapPlaces.put("University Art Museum",new LatLng(33.783425, -118.114629));
-        mapPlaces.put("Museum",new LatLng(33.783425, -118.114629));
+        mapPlaces.put("UAM",UAM);
+        mapPlaces.put("University Art Museum",UAM);
+        mapPlaces.put("Museum",UAM);
         //KIN
-        mapPlaces.put("KIN", new LatLng(33.782898, -118.112586));
-        mapPlaces.put("Kinesiology", new LatLng(33.782898, -118.112586));
+        mapPlaces.put("KIN", kin);
+        mapPlaces.put("Kinesiology", kin);
         //SRWC
-        mapPlaces.put("SRWC", new LatLng(33.785038, -118.109484));
-        mapPlaces.put("Student Recreation and Wellness Center", new LatLng(33.785038, -118.109484));
-        mapPlaces.put("Recreation and Wellness Center", new LatLng(33.785038, -118.109484));
+        mapPlaces.put("SRWC", srwc);
+        mapPlaces.put("Student Recreation and Wellness Center", srwc);
+        mapPlaces.put("Recreation and Wellness Center", srwc);
         //HHS1 (Health and Human Services)
-        mapPlaces.put("HHS1", new LatLng(33.782388, -118.112801));
-        mapPlaces.put("Health and Human Services 1", new LatLng(33.782388, -118.112801));
-        mapPlaces.put("Health Human Services 1", new LatLng(33.782388, -118.112801));
-        mapPlaces.put("Human Services 1", new LatLng(33.782388, -118.112801));
+        mapPlaces.put("HHS1", hhs1);
+        mapPlaces.put("Health and Human Services 1", hhs1);
+        mapPlaces.put("Health Human Services 1", hhs1);
+        mapPlaces.put("Human Services 1", hhs1);
         //HHS2
-        mapPlaces.put("HHS2", new LatLng(33.782384, -118.112125));
-        mapPlaces.put("Health and Human Services 2", new LatLng(33.782384, -118.112125));
-        mapPlaces.put("Health Human Services 2", new LatLng(33.782384, -118.112125));
-        mapPlaces.put("Human Services 2", new LatLng(33.782384, -118.112125));
+        mapPlaces.put("HHS2", hhs2);
+        mapPlaces.put("Health and Human Services 2", hhs2);
+        mapPlaces.put("Health Human Services 2", hhs2);
+        mapPlaces.put("Human Services 2", hhs2);
         //Health Human Services (in general)
-        mapPlaces.put("Health and Human Services", new LatLng(33.782326, -118.112490));
-        mapPlaces.put("HHS",new LatLng(33.782326, -118.112490));
-        mapPlaces.put("Human Services",new LatLng(33.782326, -118.112490));
-        mapPlaces.put("Health Human Services", new LatLng(33.782326, -118.112490));
+        mapPlaces.put("Health and Human Services", hhsGnrl);
+        mapPlaces.put("HHS",hhsGnrl);
+        mapPlaces.put("Human Services",hhsGnrl);
+        mapPlaces.put("Health Human Services", hhsGnrl);
         //BH
-        mapPlaces.put("Brotman Hall", new LatLng(33.782659, -118.115339));
-        mapPlaces.put("BH", new LatLng(33.782659, -118.115339));
-        //TODO: add other names
-        //UPPER CAMPUS
-        mapPlaces.put("USU", new LatLng(33.781281, -118.113450)); //USU
-        mapPlaces.put("CP", new LatLng(33.781316, -118.112386)); //CP Central Plant (Lego)
-        mapPlaces.put("CAFE", new LatLng(33.780574, -118.114071)); //CAFE
-        mapPlaces.put("BKS", new LatLng(33.779974, -118.114158)); //BKS Book Store
-        mapPlaces.put("MLSC", new LatLng(33.780301, -118.112488)); //MLSC Molecular Science
-        mapPlaces.put("HSCI", new LatLng(33.779830, -118.112639)); //HSCI Hall of Science
-        mapPlaces.put("MIC", new LatLng(33.779429, -118.111720)); //MIC Microbiology
-        mapPlaces.put("PH1", new LatLng(33.778898, -118.112505)); //PH1
-        mapPlaces.put("PH2", new LatLng(33.779272, -118.112482)); //PH2 Peterson Hall 2
-        mapPlaces.put("FA1", new LatLng(33.777211, -118.112557)); //FA 1
-        mapPlaces.put("FA2", new LatLng(33.777474, -118.112361)); //FA 2
-        mapPlaces.put("FA3", new LatLng(33.777935, -118.112311)); //FA 3
-        mapPlaces.put("FA4", new LatLng(33.778336, -118.112741)); //FA4 fine arts 4
-        mapPlaces.put("UT", new LatLng(33.776733, -118.112113)); //UT University Theatre?
-        mapPlaces.put("UTC", new LatLng(33.776735, -118.111652)); //UTC University Theatre Center?
-        mapPlaces.put("TA", new LatLng(33.776510, -118.112639)); //TA Theatre Arts Building
-        mapPlaces.put("MHB", new LatLng(33.776882, -118.113202)); //MHB Macintosh Building, The Toaster?
-        mapPlaces.put("AS", new LatLng(33.777009, -118.114096)); //AS ??
-        mapPlaces.put("LIB", new LatLng(33.777207, -118.114842)); //LIB Library
-        mapPlaces.put("LA1", new LatLng(33.777664, -118.114713)); //LA1
-        mapPlaces.put("LA2", new LatLng(33.777987, -118.114547)); //LA2
-        mapPlaces.put("LA3", new LatLng(33.778292, -118.114440)); //LA3
-        mapPlaces.put("LA4", new LatLng(33.778566, -118.114338)); //LA4
-        mapPlaces.put("LA5", new LatLng(33.778898, -118.114241)); //LA5
-        mapPlaces.put("LH", new LatLng(33.778187, -118.113976)); //LH Lecture Hall
-        mapPlaces.put("CLA", new LatLng(33.777815, -118.114132)); //CLA ???
-        mapPlaces.put("PSY", new LatLng(33.779318, -118.114439)); //PSY Psychology
-        mapPlaces.put("ED2", new LatLng(33.775727, -118.114354)); //ED2 the outer edge of the campus
-        mapPlaces.put("EED", new LatLng(33.776224, -118.114156)); //EED
-        mapPlaces.put("MMC", new LatLng(33.776768, -118.114561)); //MMC Multimedia Center
-        mapPlaces.put("ANNEX", new LatLng(33.777081, -118.111909)); //ANNEX (???)
-        mapPlaces.put("LAB", new LatLng(33.776887, -118.112687)); //LAB Language Arts Building
-        mapPlaces.put("FO2", new LatLng(33.778497, -118.113910)); //FO2
-        mapPlaces.put("FO3", new LatLng(33.779128, -118.113688)); //FO3
-        mapPlaces.put("FO4", new LatLng(33.778202, -118.111990)); //FO4 Faculty Office 4
-        mapPlaces.put("FO5", new LatLng(33.779103, -118.112462)); //FO5 Faculty Office 5
-
+        mapPlaces.put("Brotman Hall", bh);
+        mapPlaces.put("BH", bh);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -227,7 +374,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap = googleMap;
         UiSettings sett = mMap.getUiSettings();
         sett.isMyLocationButtonEnabled();
-        sett.setZoomControlsEnabled(true);
+        sett.setZoomControlsEnabled(false);
         sett.setScrollGesturesEnabled(true);
         mMap.setMinZoomPreference(15.0f);
         mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
@@ -237,7 +384,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .position(CSULB, 1570f, 1520f);
         mMap.addGroundOverlay(csulbMap);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
-//            instantiateMap();
+        instantiateMap();
 
 //            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
