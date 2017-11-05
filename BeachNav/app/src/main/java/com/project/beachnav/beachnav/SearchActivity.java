@@ -13,11 +13,11 @@ import android.view.Menu;
  * Created by Austin on 10/25/2017.
  */
 
-public class SearchResultsActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps_searchbar);
         Toolbar menu_toolbar = (Toolbar) findViewById(R.id.menu_toolbar);
         setSupportActionBar(menu_toolbar);
         handleIntent(getIntent());
