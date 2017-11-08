@@ -34,7 +34,7 @@
             android:paddingEnd="7dp"
             android:paddingStart="7dp"
             android:textColor="@color/colorAccent"
-            android:textColorHint="@color/colorAccent"
+            android:textColorHint="@color/background"
             android:translationY="1.5dp"
             android:visibility="visible" />
 

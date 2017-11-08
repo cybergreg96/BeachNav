@@ -5,6 +5,7 @@ import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
@@ -19,7 +20,6 @@ import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -356,11 +356,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     *  -> auto-suggestions from a database?
     */
     public void onSearch(View v) {
+//  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
         EditText location_tf = (EditText) findViewById(R.id.editText);
         String location = location_tf.getText().toString();
         List<Address> addressList = null;
 
-        if (location != null || location.equals("")) {
+        if (TextUtils.isEmpty(location)) { //handles empty string in textbox
+            location_tf.setError("Can't search nothing. Try searching a location.");
+            return;
+        }
+//        else if (the string does not match any location in the database)
+//        return error: "This location doesn't seem to be on campus. Let's try something else."
+        else { //for anything else
             Geocoder geocoder = new Geocoder(this);
             try {
                 addressList = geocoder.getFromLocationName(location, 1);
@@ -387,7 +394,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         UiSettings sett = mMap.getUiSettings();
-        sett.isMyLocationButtonEnabled();
+        sett.setMyLocationButtonEnabled(true);
         sett.setZoomControlsEnabled(false);
         sett.setScrollGesturesEnabled(true);
         mMap.setMinZoomPreference(15.0f);
