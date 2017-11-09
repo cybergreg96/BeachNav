@@ -1,7 +1,6 @@
 package com.project.beachnav.beachnav;
 
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +20,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,8 +102,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //        return error: "This location doesn't seem to be on campus. Let's try something else."
         else{
             Node address = mapPlaces.get(location);
-            LatLng latLng = new LatLng(address.getY(),address.getX());
-            System.out.println("Latitude: "+address.getX()+" Longitude: "+address.getY());
+            LatLng latLng = new LatLng(address.getX(),address.getY());
+            System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
             mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         }
