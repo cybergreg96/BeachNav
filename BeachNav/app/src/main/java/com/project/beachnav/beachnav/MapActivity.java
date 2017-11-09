@@ -1,10 +1,9 @@
 package com.project.beachnav.beachnav;
 
-import android.location.Address;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
@@ -18,18 +17,23 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static com.project.beachnav.beachnav.R.id.editText;
 
 /**
  * Created 10/25/2017.
  */
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
+//        , View.OnClickListener
+//        ,View.OnTouchListener
+{
 
     private GoogleMap mMap;
     private LatLngBounds CSULB_Bounds = new LatLngBounds(
@@ -38,12 +42,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private GoogleApiClient googleApiClient;
 
-    /*
-    * 10/24/2017 - Carl Costa
-    * The plan is to change this to Map<String, Node>
-    *     where the node
-    */
     private Map<String, Node> mapPlaces = new HashMap<>();
+    private EditText location_tf;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +60,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.BN_map);
         mapFragment.getMapAsync(this);
 
+        location_tf = (EditText) findViewById(editText);
+        location_tf.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event){
+                if ((event.getAction()==KeyEvent.ACTION_DOWN)
+                        && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    onSearch(v); return true;
+                } return false;
+        }   });
+        location_tf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                location_tf.setText("");
+        }   });
     }
 
 //    @Override
@@ -81,20 +96,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //        }
 //    }
 
+
+
+
    /**
     * Will find a location that matches the search item as best as possible.
     * (Mapped to search dialog the same way findLocation was to that button)
     * ..we need to be able to handle anything that the search dialog can give
     *  -> auto-suggestions from a database?
     */
+   private Marker m = null;
+
     public void onSearch(View v) {
 //  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
-        EditText location_tf = (EditText) findViewById(R.id.editText);
+        if (m != null) {m.remove();}
         String location = location_tf.getText().toString();
 
-        List<Address> addressList = null;
-
-        if (TextUtils.isEmpty(location)) { //handles empty string in textbox
+        if (location == null || location.equals("")) { //handles empty string in textbox
             location_tf.setError("Can't search nothing. Try searching a location.");
         }
 //        else if (the string does not match any location in the database)
@@ -102,8 +120,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         else{
             Node address = mapPlaces.get(location);
             LatLng latLng = new LatLng(address.getX(),address.getY());
-            System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
-            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+//            System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
+            m = mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         }
 //        else { //for anything else
@@ -119,6 +137,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
 //        }
     }
+
 
     /**
      * Manipulates the map once available.
@@ -169,10 +188,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
-    /**
-     * Instantiates the map
-     * this method hardcodes all the keys for all the places in CSULB
-     */
+
+    /*
+    * 10/24/2017 - Carl Costa
+    * The plan is to change this to Map<String, Node>
+    * Instantiates the map
+    * this method hardcodes all the keys for all the places in CSULB
+    */
     protected void initializePathOverlay() {
         Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>());
         Node en2 = new Node("EN2",33.783215, -118.110925, new ArrayList<Node>());
@@ -434,5 +456,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("Brotman Hall", bh);
         mapPlaces.put("BH", bh);
     }
+
 
 }
