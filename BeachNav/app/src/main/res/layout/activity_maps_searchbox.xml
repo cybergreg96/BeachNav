@@ -12,50 +12,51 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_weight="5"
         tools:context=".MapActivity" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:gravity="bottom">
 
         <EditText
             android:id="@+id/editText"
-            android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="5dp"
-            android:layout_weight="2.5"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_weight="16.11"
+            android:background="@color/colorAccent"
             android:backgroundTint="@color/colorPrimary"
-            android:elevation="0dp"
-            android:ems="10"
             android:hint="@string/menu_search_hint"
             android:inputType="text"
-            android:textColor="@color/colorPrimary"
+            android:paddingEnd="7dp"
+            android:paddingStart="7dp"
+            android:textColor="@color/colorAccent"
+            android:textColorHint="@color/background"
+            android:translationY="1.5dp"
             android:visibility="visible" />
 
         <Button
             android:id="@+id/search"
-            android:layout_width="48dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.40"
+            android:layout_weight="0.4"
             android:backgroundTint="@color/colorPrimary"
-            android:drawableStart="@android:drawable/ic_menu_search" android:onClick="onSearch" />
-    <!--11/5/2017, 1:03am, Austin Tao - this only works for "Vivian Engineering Center" for now -->
+            android:drawableStart="@android:drawable/ic_menu_search"
+            android:onClick="onSearch" />
+        <!--11/5/2017, 1:03am, Austin Tao - this only works for "Vivian Engineering Center" for now -->
 
         <Button
             android:id="@+id/location"
-            android:layout_width="48dp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
 
-            android:layout_weight="0.40"
+            android:layout_weight="0.4"
             android:backgroundTint="@color/colorPrimary"
             android:drawableStart="@android:drawable/ic_menu_mylocation" />
-            <!--android:onClick="findLocation" -->
+        <!--android:onClick="findLocation" -->
     </LinearLayout>
 
 </RelativeLayout>
