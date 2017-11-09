@@ -96,14 +96,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (TextUtils.isEmpty(location)) { //handles empty string in textbox
             location_tf.setError("Can't search nothing. Try searching a location.");
-            return;
         }
 //        else if (the string does not match any location in the database)
 //        return error: "This location doesn't seem to be on campus. Let's try something else."
         else{
             Node address = mapPlaces.get(location);
-            LatLng latLng = new LatLng(address.getY(),address.getX());
-            System.out.println("Latitude: "+address.getX()+" Longitude: "+address.getY());
+            LatLng latLng = new LatLng(address.getX(),address.getY());
+            System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
             mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
             mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
         }
