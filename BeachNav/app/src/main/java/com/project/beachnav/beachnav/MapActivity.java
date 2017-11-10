@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by Austin on 10/25/2017.
@@ -43,7 +44,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     * The plan is to change this to Map<String, Node>
     *     where the node
     */
-    private Map<String, Node> mapPlaces = new HashMap<>();
+    private Map<String, Node> mapPlaces = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +102,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //        else if (the string does not match any location in the database)
 //        return error: "This location doesn't seem to be on campus. Let's try something else."
         else{
+
             Node address = mapPlaces.get(location);
             LatLng latLng = new LatLng(address.getX(),address.getY());
             System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
