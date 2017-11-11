@@ -1,4 +1,4 @@
-package com.project.beachnav.beachnav.fragment;
+package com.project.beachnav.beachnav;
 
 import android.location.LocationManager;
 import android.os.Bundle;
