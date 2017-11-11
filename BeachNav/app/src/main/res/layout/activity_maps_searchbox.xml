@@ -13,16 +13,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        tools:context=".MapActivity" />
-
-    <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/floatingActionButton"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_weight="16.11"-->
-        <!--android:clickable="true"-->
-        <!--app:fabSize="mini"-->
-        <!--app:srcCompat="@android:drawable/ic_menu_directions" />-->
+        tools:context=".MapFragment" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,8 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_weight="20"
-            android:background="@color/colorAccent"
-            android:backgroundTint="@color/colorPrimary"
+            android:background="@color/colorPrimary"
             android:hint="@string/menu_search_hint"
             android:imeOptions="actionSearch"
             android:inputType="text"
@@ -46,7 +36,7 @@
             android:paddingStart="5dp"
             android:paddingTop="13dp"
             android:textColor="@color/colorAccent"
-            android:textColorHint="@color/background"
+            android:textColorHint="@color/colorAccent"
             android:translationY="1dp"
             android:visibility="visible" />
 

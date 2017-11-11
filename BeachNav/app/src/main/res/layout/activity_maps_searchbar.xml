@@ -25,7 +25,7 @@
         android:layout_height="match_parent"
         android:layout_weight="5"
         android:id="@+id/BN.map"
-        tools:context=".MapActivity"
+        tools:context=".MapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
 </RelativeLayout>

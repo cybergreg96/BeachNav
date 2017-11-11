@@ -2,7 +2,7 @@ package com.project.beachnav.beachnav;
 
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -24,16 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.project.beachnav.beachnav.R.id.editText;
-
 /**
  * Created 10/25/2017.
  */
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
-//        , View.OnClickListener
-//        ,View.OnTouchListener
-{
+public class MapFragment extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLngBounds CSULB_Bounds = new LatLngBounds(
@@ -48,19 +43,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_maps_searchbox);
-
-//        setContentView(R.layout.activity_maps_searchbar);
-//        Toolbar menu_toolbar = (Toolbar) findViewById(R.id.menu_toolbar);
-//        setSupportActionBar(menu_toolbar);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.BN_map);
         mapFragment.getMapAsync(this);
 
-        location_tf = (EditText) findViewById(editText);
+        initializePathOverlay();
+
+        location_tf = (EditText) findViewById(R.id.editText);
         location_tf.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event){
@@ -96,9 +88,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //        }
 //    }
 
-
-
-
    /**
     * Will find a location that matches the search item as best as possible.
     * (Mapped to search dialog the same way findLocation was to that button)
@@ -114,15 +103,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         if (location == null || location.equals("")) { //handles empty string in textbox
             location_tf.setError("Can't search nothing. Try searching a location.");
-        }
-//        else if (the string does not match any location in the database)
-//        return error: "This location doesn't seem to be on campus. Let's try something else."
-        else{
-            Node address = mapPlaces.get(location);
-            LatLng latLng = new LatLng(address.getX(),address.getY());
-//            System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
-            m = mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        } else {
+            try { //mapPlaces finds key:location and returns a Node containing location info
+                Node address = mapPlaces.get(location);
+                LatLng latLng = new LatLng(address.getX(),address.getY());
+//              System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
+                m = mMap.addMarker(new MarkerOptions().position(latLng).title(address.getLabel()));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            } catch (Exception e) { //what happens when location is not in the hashmap? this does
+                location_tf.setError("Location not found. Try another location.");
+            }
         }
 //        else { //for anything else
 //            Geocoder geocoder = new Geocoder(this);
@@ -163,7 +153,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .position(CSULB, 1570f, 1520f);
         mMap.addGroundOverlay(csulbMap);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
-        initializePathOverlay();
 
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
@@ -272,8 +261,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Node lab = new Node("Language Arts Building",33.776887, -118.112687, new ArrayList<Node>());
         Node fo2 = new Node("Faculty Office 2",33.778497, -118.113910,new ArrayList<Node>());
         Node fo3 = new Node("Faculty Office 3",33.779128, -118.113688,new ArrayList<Node>());
-        Node fo4 = new Node("Faculty Office 3",33.778202, -118.111990,new ArrayList<Node>());
-        Node fo5 = new Node("Faculty Office 3",33.779103, -118.112462,new ArrayList<Node>());
+        Node fo4 = new Node("Faculty Office 4",33.778202, -118.111990,new ArrayList<Node>());
+        Node fo5 = new Node("Faculty Office 5",33.779103, -118.112462,new ArrayList<Node>());
         //UPPER CAMPUS
         //USU
         mapPlaces.put("USU", usu);
