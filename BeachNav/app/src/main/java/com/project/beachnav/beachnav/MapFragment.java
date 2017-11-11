@@ -43,7 +43,7 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps_searchbox);
+        setContentView(R.layout.activity_maps);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -94,7 +94,7 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
     * ..we need to be able to handle anything that the search dialog can give
     *  -> auto-suggestions from a database?
     */
-   private Marker m = null;
+   private Marker m;
 
     public void onSearch(View v) {
 //  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
@@ -127,7 +127,6 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
 //            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
 //        }
     }
-
 
     /**
      * Manipulates the map once available.
@@ -176,6 +175,18 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+//        outState.putDouble("Latitude",m.getPosition().latitude);
+//        outState.putDouble("Longitude",m.getPosition().longitude);
+//        outState.putString("Location",m.getTitle());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+//        Node address = new Node(savedInstanceState.getString("Location"),
+//                savedInstanceState.getDouble("Latitude"),savedInstanceState.getDouble("Longitude"));
+//        LatLng latLng = new LatLng(address.getX(),address.getY());
+//        m = mMap.addMarker(new MarkerOptions().position(latLng).title(address.getLabel()));
     }
 
     /*
