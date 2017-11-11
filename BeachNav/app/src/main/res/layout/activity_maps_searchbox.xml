@@ -33,7 +33,7 @@
             android:inputType="text"
             android:onClick="onClick"
             android:paddingBottom="12dp"
-            android:paddingStart="5dp"
+            android:paddingStart="10dp"
             android:paddingTop="13dp"
             android:textColor="@color/colorAccent"
             android:textColorHint="@color/colorAccent"
