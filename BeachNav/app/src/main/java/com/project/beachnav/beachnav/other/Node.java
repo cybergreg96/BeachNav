@@ -1,4 +1,4 @@
-package com.project.beachnav.beachnav;
+package com.project.beachnav.beachnav.other;
 
 /**
  * @author Austin Leavitt
@@ -43,8 +43,8 @@ public class Node {
     public double getDistance(Node other) {
         double x1 = lng;
         double y1 = lat;
-        double x2 = other.getX();
-        double y2 = other.getY();
+        double x2 = other.getY();
+        double y2 = other.getX();
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
@@ -98,10 +98,10 @@ public class Node {
     public void setY(double y) {
         lat = y;
     }
-    public double getX() {
+    public double getY() {
         return lng;
     }
-    public double getY() {
+    public double getX() {
         return lat;
     }
 

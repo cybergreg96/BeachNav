@@ -1,10 +1,9 @@
 package com.project.beachnav.beachnav;
 
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
@@ -18,20 +17,20 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.project.beachnav.beachnav.R;
+import com.project.beachnav.beachnav.other.Node;
 
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Austin on 10/25/2017.
+ * Created 10/25/2017.
  */
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLngBounds CSULB_Bounds = new LatLngBounds(
@@ -40,16 +39,164 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private GoogleApiClient googleApiClient;
 
+    private Map<String, Node> mapPlaces = new HashMap<>();
+    private EditText location_tf;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.BN_map);
+        mapFragment.getMapAsync(this);
+
+        initializePathOverlay();
+
+        location_tf = (EditText) findViewById(R.id.editText);
+        location_tf.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event){
+                if ((event.getAction()==KeyEvent.ACTION_DOWN)
+                        && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    onSearch(v); return true;
+                } return false;
+        }   });
+        location_tf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                location_tf.setText("");
+        }   });
+    }
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.appbar_menu, menu);
+//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView = (SearchView) menu.findItem(R.id.search_location).getActionView();
+//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+//        return true;
+//    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch(item.getItemId()){
+//            case R.id.current_location: Toast.makeText(getApplicationContext(), "Location", Toast.LENGTH_SHORT).show(); return true;
+//            case R.id.settings: Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show(); return true;
+//            case R.id.help: Toast.makeText(getApplicationContext(), "Help", Toast.LENGTH_SHORT).show(); return true;
+//            default: return super.onOptionsItemSelected(item);
+//        }
+//    }
+
+   /**
+    * Will find a location that matches the search item as best as possible.
+    * (Mapped to search dialog the same way findLocation was to that button)
+    * ..we need to be able to handle anything that the search dialog can give
+    *  -> auto-suggestions from a database?
+    */
+   private Marker m;
+
+    public void onSearch(View v) {
+//  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
+        if (m != null) {m.remove();}
+        String location = location_tf.getText().toString();
+
+        if (location == null || location.equals("")) { //handles empty string in textbox
+            location_tf.setError("Can't search nothing. Try searching a location.");
+        } else {
+            try { //mapPlaces finds key:location and returns a Node containing location info
+                Node address = mapPlaces.get(location);
+                LatLng latLng = new LatLng(address.getX(),address.getY());
+//              System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
+                m = mMap.addMarker(new MarkerOptions().position(latLng).title(address.getLabel()));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            } catch (Exception e) { //what happens when location is not in the hashmap? this does
+                location_tf.setError("Location not found. Try another location.");
+            }
+        }
+//        else { //for anything else
+//            Geocoder geocoder = new Geocoder(this);
+//            try {
+//                addressList = geocoder.getFromLocationName(location, 1);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            Address address = addressList.get(0);
+//            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+//            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+//            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+//        }
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker within CSULB.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        UiSettings sett = mMap.getUiSettings();
+        sett.setMyLocationButtonEnabled(true);
+        sett.setZoomControlsEnabled(false);
+        sett.setScrollGesturesEnabled(true);
+        mMap.setMinZoomPreference(15.0f);
+        mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
+        LatLng CSULB = new LatLng(33.782, -118.116);
+        GroundOverlayOptions csulbMap = new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016))
+                .position(CSULB, 1570f, 1520f);
+        mMap.addGroundOverlay(csulbMap);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
+
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+////      TODO: Consider calling
+//            return;
+//        }
+//        mMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+//        outState.putDouble("Latitude",m.getPosition().latitude);
+//        outState.putDouble("Longitude",m.getPosition().longitude);
+//        outState.putString("Location",m.getTitle());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+//        Node address = new Node(savedInstanceState.getString("Location"),
+//                savedInstanceState.getDouble("Latitude"),savedInstanceState.getDouble("Longitude"));
+//        LatLng latLng = new LatLng(address.getX(),address.getY());
+//        m = mMap.addMarker(new MarkerOptions().position(latLng).title(address.getLabel()));
+    }
+
     /*
     * 10/24/2017 - Carl Costa
     * The plan is to change this to Map<String, Node>
-    *     where the node
+    * Instantiates the map
+    * this method hardcodes all the keys for all the places in CSULB
     */
-    private Map<String, Node> mapPlaces = new HashMap<>();
-    /**
-     * Instantiates the map
-     * this method hardcodes all the keys for all the places in CSULB
-
     protected void initializePathOverlay() {
         Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>());
         Node en2 = new Node("EN2",33.783215, -118.110925, new ArrayList<Node>());
@@ -127,8 +274,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Node lab = new Node("Language Arts Building",33.776887, -118.112687, new ArrayList<Node>());
         Node fo2 = new Node("Faculty Office 2",33.778497, -118.113910,new ArrayList<Node>());
         Node fo3 = new Node("Faculty Office 3",33.779128, -118.113688,new ArrayList<Node>());
-        Node fo4 = new Node("Faculty Office 3",33.778202, -118.111990,new ArrayList<Node>());
-        Node fo5 = new Node("Faculty Office 3",33.779103, -118.112462,new ArrayList<Node>());
+        Node fo4 = new Node("Faculty Office 4",33.778202, -118.111990,new ArrayList<Node>());
+        Node fo5 = new Node("Faculty Office 5",33.779103, -118.112462,new ArrayList<Node>());
         //UPPER CAMPUS
         //USU
         mapPlaces.put("USU", usu);
@@ -138,7 +285,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("CP", cp);
         mapPlaces.put("Central Plant", cp);
         mapPlaces.put("Huge Stairs", cp);
-        //CAFE
+        //CAFE, etc
         mapPlaces.put("CAFE", cafe);
         mapPlaces.put("Nugget", cafe);
         mapPlaces.put("beachwalk", cafe);
@@ -168,16 +315,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("Peterson Hall two", ph2);
         //FA 1
         mapPlaces.put("FA1",fa1);
+        mapPlaces.put("Fine Arts 1", fa1);
         //FA 2
         mapPlaces.put("FA2",fa2);
+        mapPlaces.put("Fine Arts 2", fa2);
         //FA 3
         mapPlaces.put("FA3", fa3);
+        mapPlaces.put("Fine Arts 3", fa3);
         //FA4 fine arts 4
         mapPlaces.put("FA4",fa4);
-        //UT University Theatre?
+        mapPlaces.put("Fine Arts 4", fa4);
+        //UT University Theatre
         mapPlaces.put("UT", ut);
-        //UTC University Theatre Center?
+        //UTC University Telecommunications
         mapPlaces.put("UTC", utc);
+        mapPlaces.put("University Telecommunications", utc);
         //TA Theatre Arts Building
         mapPlaces.put("TA", ta);
         //MHB Macintosh Building, The Toaster?
@@ -186,8 +338,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("Macintosh", mhb);
         mapPlaces.put("Toaster", mhb);
         mapPlaces.put("The Toaster", mhb);
-        //AS ??
-        mapPlaces.put("AS", as);
+        //AS - Academic Services
+        mapPlaces.put("Academic Services", as);
         //LIB Library
         mapPlaces.put("LIB", lib);
         mapPlaces.put("Library", lib);
@@ -209,8 +361,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //LH Lecture Hall
         mapPlaces.put("LH", lh);
         mapPlaces.put("Lecture Hall", lh);
-        //CLA ???
+        //CLA
         mapPlaces.put("CLA", cla);
+        mapPlaces.put("College of Liberal Arts", cla);
         //PSY Psychology
         mapPlaces.put("PSY", psy);
         mapPlaces.put("Psychology", psy);
@@ -218,23 +371,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("ED2", ed2);
         mapPlaces.put("Education 2", ed2);
         //EED
-        mapPlaces.put("EED", eed);
+        mapPlaces.put("ED1", eed);
+        mapPlaces.put("Education 1", eed);
         //MMC Multimedia Center
         mapPlaces.put("MMC", mmc);
         mapPlaces.put("Multimedia Center", mmc);
         //ANNEX (???)
-        mapPlaces.put("ANNEX", annex);
+        mapPlaces.put("Art Annex", annex);
         //LAB Language Arts Building
         mapPlaces.put("LAB",lab);
         mapPlaces.put("Language Arts Building",lab);
         //FO2
         mapPlaces.put("FO2", fo2);
+        mapPlaces.put("Faculty Office 2", fo2);
         //FO3
         mapPlaces.put("FO3", fo3);
+        mapPlaces.put("Faculty Office 3", fo3);
         //FO4 Faculty Office 4
         mapPlaces.put("FO4", fo4);
+        mapPlaces.put("Faculty Office 4", fo4);
         //FO5 Faculty Office 5
         mapPlaces.put("FO5", fo5);
+        mapPlaces.put("Faculty Office 5", fo5);
         //LOWER CAMPUS
         //ECS
         mapPlaces.put("ECS", ecs);
@@ -301,115 +459,5 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapPlaces.put("BH", bh);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_maps_searchbox);
-
-//        setContentView(R.layout.activity_maps_searchbar);
-//        Toolbar menu_toolbar = (Toolbar) findViewById(R.id.menu_toolbar);
-//        setSupportActionBar(menu_toolbar);
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.BN_map);
-        mapFragment.getMapAsync(this);
-
-    }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.options_menu, menu);
-//        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-//        SearchView searchView = (SearchView) menu.findItem(R.id.search_location).getActionView();
-//        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-//        return true;
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch(item.getItemId()){
-//            case R.id.current_location: Toast.makeText(getApplicationContext(), "Location", Toast.LENGTH_SHORT).show(); return true;
-//            case R.id.settings: Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT).show(); return true;
-//            case R.id.help: Toast.makeText(getApplicationContext(), "Help", Toast.LENGTH_SHORT).show(); return true;
-//            default: return super.onOptionsItemSelected(item);
-//        }
-//    }
-
-   /**
-    * Will find a location that matches the search item as best as possible.
-    * (Mapped to search dialog the same way findLocation was to that button)
-    * ..we need to be able to handle anything that the search dialog can give
-    *  -> auto-suggestions from a database?
-    */
-    public void onSearch(View v) {
-        EditText location_tf = (EditText) findViewById(R.id.editText);
-        String location = location_tf.getText().toString();
-        List<Address> addressList = null;
-
-        if (location != null || location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
-            try {
-                addressList = geocoder.getFromLocationName(location, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-        }
-    }
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker within CSULB.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        UiSettings sett = mMap.getUiSettings();
-        sett.isMyLocationButtonEnabled();
-        sett.setZoomControlsEnabled(false);
-        sett.setScrollGesturesEnabled(true);
-        mMap.setMinZoomPreference(15.0f);
-        mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
-        LatLng CSULB = new LatLng(33.782, -118.116);
-        GroundOverlayOptions csulbMap = new GroundOverlayOptions()
-                .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016))
-                .position(CSULB, 1570f, 1520f);
-        mMap.addGroundOverlay(csulbMap);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
-        initializePathOverlay();
-
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-//                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-////      TODO: Consider calling
-//            return;
-//        }
-//        mMap.setMyLocationEnabled(true);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
 }

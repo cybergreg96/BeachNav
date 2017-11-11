@@ -1,9 +1,11 @@
-package com.project.beachnav.beachnav;
+package com.project.beachnav.beachnav.activity;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.project.beachnav.beachnav.MapActivity;
 //import android.os.Handler;
 
 public class SplashActivity extends AppCompatActivity{
@@ -11,7 +13,7 @@ public class SplashActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_maps_searchbar);
+//        setContentView(R.layout.activity_maps);
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
