@@ -1,4 +1,4 @@
-package com.project.beachnav.beachnav;
+package com.project.beachnav.beachnav.fragment;
 
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -30,7 +30,7 @@ import java.util.Map;
  * Created 10/25/2017.
  */
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapFragment extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLngBounds CSULB_Bounds = new LatLngBounds(
