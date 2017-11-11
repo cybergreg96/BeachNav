@@ -22,7 +22,7 @@
 //
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.options_menu, menu);
+//        getMenuInflater().inflate(R.menu.appbar_menu, menu);
 //        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 //        SearchView searchView = (SearchView) menu.findItem(R.id.search_location).getActionView();
 //        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));

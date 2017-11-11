@@ -1,9 +1,11 @@
-package com.project.beachnav.beachnav;
+package com.project.beachnav.beachnav.activity;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import com.project.beachnav.beachnav.fragment.MapFragment;
 //import android.os.Handler;
 
 public class SplashActivity extends AppCompatActivity{

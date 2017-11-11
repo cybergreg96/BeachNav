@@ -1,4 +1,4 @@
-package com.project.beachnav.beachnav;
+package com.project.beachnav.beachnav.other;
 
 /**
  * @author Austin Leavitt

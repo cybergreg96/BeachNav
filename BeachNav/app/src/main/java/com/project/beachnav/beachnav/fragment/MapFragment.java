@@ -1,4 +1,4 @@
-package com.project.beachnav.beachnav;
+package com.project.beachnav.beachnav.fragment;
 
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -19,6 +19,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.project.beachnav.beachnav.R;
+import com.project.beachnav.beachnav.other.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,7 +73,7 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.options_menu, menu);
+//        inflater.inflate(R.menu.appbar_menu, menu);
 //        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
 //        SearchView searchView = (SearchView) menu.findItem(R.id.search_location).getActionView();
 //        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));

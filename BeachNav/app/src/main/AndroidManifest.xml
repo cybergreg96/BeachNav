@@ -33,7 +33,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MapFragment"
+            android:name=".fragment.MapFragment"
             android:theme="@style/CompatTheme.NoTitle"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
