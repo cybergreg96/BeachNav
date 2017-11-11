@@ -30,7 +30,7 @@ import java.util.Map;
  * Created 10/25/2017.
  */
 
-public class MapFragment extends FragmentActivity implements OnMapReadyCallback {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLngBounds CSULB_Bounds = new LatLngBounds(
