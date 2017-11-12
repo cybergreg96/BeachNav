@@ -4,8 +4,6 @@ package com.project.beachnav.beachnav.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
-import com.project.beachnav.beachnav.fragment.MapFragment;
 //import android.os.Handler;
 
 public class SplashActivity extends AppCompatActivity{
@@ -17,7 +15,7 @@ public class SplashActivity extends AppCompatActivity{
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
-                Intent splashIntent = new Intent(SplashActivity.this, MapFragment.class);
+                Intent splashIntent = new Intent(SplashActivity.this, MapActivity.class);
                 startActivity(splashIntent);
                 finish();
 //        }   }, SPLASH_TIME_OUT);

@@ -1,4 +1,4 @@
-package com.project.beachnav.beachnav.fragment;
+package com.project.beachnav.beachnav.activity;
 
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -30,7 +30,7 @@ import java.util.Map;
  * Created 10/25/2017.
  */
 
-public class MapFragment extends FragmentActivity implements OnMapReadyCallback {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLngBounds CSULB_Bounds = new LatLngBounds(
@@ -48,8 +48,8 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
         setContentView(R.layout.activity_maps);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.BN_map);
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.BN_map);
         mapFragment.getMapAsync(this);
 
         initializePathOverlay();
@@ -177,16 +177,13 @@ public class MapFragment extends FragmentActivity implements OnMapReadyCallback 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        outState.putDouble("Latitude",m.getPosition().latitude);
-//        outState.putDouble("Longitude",m.getPosition().longitude);
-//        outState.putString("Location",m.getTitle());
+//        outState.putString("Location searched", location_tf.getText().toString());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-//        Node address = new Node(savedInstanceState.getString("Location"),
-//                savedInstanceState.getDouble("Latitude"),savedInstanceState.getDouble("Longitude"));
+//        Node address = mapPlaces.get(savedInstanceState.getString("Location searched"));
 //        LatLng latLng = new LatLng(address.getX(),address.getY());
 //        m = mMap.addMarker(new MarkerOptions().position(latLng).title(address.getLabel()));
     }
