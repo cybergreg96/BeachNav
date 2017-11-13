@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BeachNav.iml" filepath="$PROJECT_DIR$/BeachNav.iml" />
+      <module fileurl="file://C:\Users\Justin\Documents\GitHub\BeachNav\BeachNav\BeachNav.iml" filepath="C:\Users\Justin\Documents\GitHub\BeachNav\BeachNav\BeachNav.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\Justin\Documents\GitHub\BeachNav\BeachNav\app\app.iml" filepath="C:\Users\Justin\Documents\GitHub\BeachNav\BeachNav\app\app.iml" />
     </modules>
   </component>
 </project>
