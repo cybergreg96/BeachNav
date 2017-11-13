@@ -19,7 +19,7 @@ public class PathToDraw {
         lineToDraw.color(Color.parseColor("#CC0000FF"));
         lineToDraw.width(5);
         lineToDraw.visible(true);
-        for(int i=0;i<=nodeArr.length;i++){
+        for(int i=0;i<nodeArr.length;i++){
             Location toAdd = new Location(nodeArr[i].getLabel());
             toAdd.setLatitude(nodeArr[i].getX());
             toAdd.setLongitude(nodeArr[i].getY());
