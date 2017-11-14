@@ -95,7 +95,6 @@ public class Node {
     {
 //        Node[] nodeArr = (Node[])shortestPath.toArray();
         Node[] nodeArr = new Node[shortestPath.size()];
-
         int w = 0;
         for (Node n: shortestPath) {
             nodeArr[w] = n;

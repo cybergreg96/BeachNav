@@ -70,6 +70,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             public void onClick(View v) {
                 location_tf.setText("");
         }   });
+//      include removePath() here
 
         routeButton = findViewById(R.id.route);
         routeButton.setOnClickListener(new View.OnClickListener() {
@@ -154,7 +155,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //        Toast.makeText(this, "A route goes from where you are to where you want to go", Toast.LENGTH_SHORT).show();
         Node a = mapPlaces.get("ECS");
         if (path != null) {
-            path = null;
+            path = null; //and then un-draw the path (with removePath()), and leave the marker
         }
         try {
             path = Node.getPath(a,address);
