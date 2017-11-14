@@ -12,27 +12,27 @@
         android:layout_marginStart="5dp"
         android:layout_weight="20"
         android:background="@color/colorPrimary"
-        android:hint="@string/menu_search_hint"
+        android:freezesText="true"
+        android:hint="@string/search_hint"
         android:imeOptions="actionSearch"
         android:inputType="text"
         android:onClick="onClick"
-        android:freezesText="true"
         android:paddingBottom="12dp"
         android:paddingStart="10dp"
-        android:paddingTop="13dp"
+        android:paddingTop="12dp"
         android:textColor="@color/colorAccent"
         android:textColorHint="@color/colorAccent"
         android:translationY="1dp"
         android:visibility="visible" />
 
     <Button
-        android:id="@+id/search"
+        android:id="@+id/route"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:backgroundTint="@color/colorPrimary"
         android:drawableStart="@android:drawable/ic_menu_directions"
-        android:onClick=""
+        android:onClick="onClick"
         android:translationX="1dp" />
     <!--the routing method goes here-->
 
@@ -40,7 +40,7 @@
         android:id="@+id/location"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-
+        android:onClick="onClick"
         android:layout_weight="0.5"
         android:backgroundTint="@color/colorPrimary"
         android:drawableStart="@android:drawable/ic_menu_mylocation" />
