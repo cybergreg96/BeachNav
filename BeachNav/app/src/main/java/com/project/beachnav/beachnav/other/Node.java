@@ -83,6 +83,7 @@ public class Node {
         return path;
     }
 
+
     //Setters and getters
     public void setAdjacent(Node other) {
         adjacent.add(other);
