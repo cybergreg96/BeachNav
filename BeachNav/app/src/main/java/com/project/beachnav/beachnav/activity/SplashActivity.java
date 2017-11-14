@@ -15,7 +15,8 @@ public class SplashActivity extends AppCompatActivity{
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
-                Intent splashIntent = new Intent(SplashActivity.this, MapActivity.class);
+        Intent splashIntent = new Intent(SplashActivity.this, MapFragActivity.class);
+//        Intent splashIntent = new Intent(SplashActivity.this, MainActivity.class);
                 startActivity(splashIntent);
                 finish();
 //        }   }, SPLASH_TIME_OUT);
