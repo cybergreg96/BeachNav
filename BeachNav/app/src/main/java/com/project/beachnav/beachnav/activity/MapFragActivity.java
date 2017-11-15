@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.beachnav.beachnav.R;
 import com.project.beachnav.beachnav.other.Node;
+import com.project.beachnav.beachnav.other.PathHandler;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     private Marker m;
     private Node address = null;
     private ArrayList<Node> path;
+    private PathHandler ph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,6 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             public void onClick(View v) {
                 location_tf.setText("");
         }   });
-//      include removePath() here
 
         routeButton = findViewById(R.id.route);
         routeButton.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +121,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     public void onSearch(View v) {
 //  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
         if (m != null) {m.remove();}
+
         String location = location_tf.getText().toString();
 
         if (location == null || location.equals("")) { //handles empty string in textbox
@@ -156,10 +158,13 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         Node a = mapPlaces.get("ECS");
         if (path != null) {
             path = null; //and then un-draw the path (with removePath()), and leave the marker
+            ph.clearPath();
         }
         try {
             path = Node.getPath(a,address);
-            Node.drawPath(path, mMap);
+            ph = new PathHandler(path, mMap);
+            ph.genVisualPath();
+            ph.show();
         } catch(Exception e) {
             location_tf.setError("We need your location and the location you want to go to.");
             e.printStackTrace();
