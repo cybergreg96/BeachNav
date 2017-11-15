@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Justin on 11/12/2017.
@@ -49,11 +50,9 @@ public class PathHandler {
         }
         p = gmap.addPolyline(lineToDraw);
     }
-    public void clearPath(){
+    public void clearPath() {
         lineToDraw.visible(false);
         p.remove();
-        for(Location l: drawnLocs){
-            drawnLocs.remove(l);
-        }
+        drawnLocs.removeAll(Collections.singleton(null));
     }
 }
