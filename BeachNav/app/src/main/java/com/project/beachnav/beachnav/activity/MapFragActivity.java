@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.beachnav.beachnav.R;
 import com.project.beachnav.beachnav.other.Node;
+import com.project.beachnav.beachnav.other.PathHandler;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -159,7 +160,9 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         }
         try {
             path = Node.getPath(a,address);
-            Node.drawPath(path, mMap);
+            PathHandler ph = new PathHandler(path, mMap);
+            ph.genVisualPath();
+            ph.show();
         } catch(Exception e) {
             location_tf.setError("We need your location and the location you want to go to.");
             e.printStackTrace();
