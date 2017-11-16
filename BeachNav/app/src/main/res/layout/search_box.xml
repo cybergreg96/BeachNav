@@ -40,10 +40,10 @@
         android:id="@+id/location"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:onClick="onClick"
         android:layout_weight="0.5"
         android:backgroundTint="@color/colorPrimary"
-        android:drawableStart="@android:drawable/ic_menu_mylocation" />
+        android:drawableStart="@android:drawable/ic_menu_mylocation"
+        android:onClick="onSearch" />
     <!--android:onClick="findLocation" -->
 
 </LinearLayout>
