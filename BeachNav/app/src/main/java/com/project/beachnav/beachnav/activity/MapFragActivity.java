@@ -1,22 +1,12 @@
 package com.project.beachnav.beachnav.activity;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,7 +14,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -54,10 +43,13 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     private Map<String, Node> mapPlaces = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private EditText location_tf;
 
-    private Marker m;
-    private Node address = null;
+    private Marker searched_location;
+    private Marker user_location;
+
+    private Node currentLoc = null;
+    private Node searchedLoc = null;
     private ArrayList<Node> path;
-    private PathHandler ph;
+    private PathHandler pathHandler;
     private Location myLocation;
 
     private UserLocation userLocation;
@@ -107,7 +99,6 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 findCurrentLocation();
             }
         });
-
     }
 
 //    @Override
@@ -140,22 +131,22 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
     public void onSearch(View v) {
 //  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
-        if (m != null) {m.remove();}
+        if (searched_location != null) {searched_location.remove();}
         if (path != null) {
             path = null; //and then un-draw the path (with removePath()), and leave the marker
-            ph.clearPath();
+            pathHandler.clearPath();
         }
 
-        String location = location_tf.getText().toString();
+        String location = location_tf.getText().toString(); // takes string in textbox
 
-        if (location == null || location.equals("")) { //handles empty string in textbox
+        if (location == null || location.equals("")) { //handles empty string
             location_tf.setError("Can't search nothing. Try searching a location.");
         } else {
             try { //mapPlaces finds key:location and returns a Node containing location info
-                address = mapPlaces.get(location);
-                LatLng latLng = new LatLng(address.getX(),address.getY());
-//              System.out.println("Latitude: "+address.getY()+" Longitude: "+address.getX());
-                m = mMap.addMarker(new MarkerOptions().position(latLng).title(address.getLabel()));
+                searchedLoc = mapPlaces.get(location);
+                LatLng latLng = new LatLng(searchedLoc.getX(),searchedLoc.getY());
+//              System.out.println("Latitude: "+searchedLoc.getY()+" Longitude: "+searchedLoc.getX());
+                searched_location = mMap.addMarker(new MarkerOptions().position(latLng).title(searchedLoc.getLabel()));
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             } catch (Exception e) { //what happens when location is not in the hashmap? this does
                 location_tf.setError("Location not found. Try another location.");
@@ -166,32 +157,41 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     public void onRoute() {
 //        Toast.makeText(this, "A route goes from where you are to where you want to go", Toast.LENGTH_SHORT).show();
 
-        Node current = mapPlaces.get("ECS"); //placeholder, user's currentLocation will replace this
+        Node currentLoc = mapPlaces.get("ECS");
+        // placeholder, user's currentLocation will replace this
+        // as a matter of fact, maybe we can move 'current' to findCurrentLocation()
+
         if (path != null) {
             path = null; //and then un-draw the path (with removePath()), and leave the marker
-            ph.clearPath();
+            pathHandler.clearPath();
         } try {
-            path = Node.getPath(current, address);
-            ph = new PathHandler(path, mMap);
-            ph.genVisualPath();
-            ph.show();
+            path = Node.getPath(currentLoc, searchedLoc);
+            pathHandler = new PathHandler(path, mMap);
+            pathHandler.genVisualPath();  pathHandler.show();
         } catch(Exception e) {
             location_tf.setError("We need your location and the location you want to go to.");
             e.printStackTrace();
         }
-    }//only navigates while user's currentlocation is within CSULB_bounds
+    } //only navigates while user's currentlocation is within CSULB_bounds (endgame)
 
 
 
-    //event handler for location button, finds current location
+    //event handler for location button, finds current location using UserLocation
     public void findCurrentLocation() {
         //user location
+        if (user_location != null) {user_location.remove();}
+
         userLocation = new UserLocation(getApplicationContext());
         myLocation = userLocation.getLocation();
         userLat = myLocation.getLatitude();
         userLong = myLocation.getLongitude();
+
+        currentLoc = new Node(userLat, userLong);
+//        would be good if this was here but we would have to figure out how to
+//        convert the user's location
+
         LatLng latLng = new LatLng(userLat,userLong);
-        m = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
+        user_location = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
@@ -227,14 +227,15 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 ////      TODO: Consider calling
 //            return;
 //        }
-//        mMap.setMyLocationEnabled(true);
+//        mMap.setMyLocationEnabled(true);   // something to look at
+
+//        findCurrentLocation(); // this would come up at the end to immediately get location
     }
 
     @Override
     protected void onPause() {
         super.onPause();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -248,11 +249,12 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             super.onSaveInstanceState(outState);
         }
     }
-
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
     }
+//    things to save/ pull back out:
+//    currentlocation, cameraposition, searchedlocation, map(done automatically), path(?)
 
     /*
     * 10/24/2017 - Carl Costa / Austin Leavitt - 11/13/2017
@@ -260,6 +262,10 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     * Instantiates the map
     * this method hardcodes all the keys for all the places in CSULB
     * and then creates a web of nodes that represent every walkable path on campus
+    *
+    * future plan: transfer all information in this method into a sqlitebuilder database...
+       *  would have 800 lines less
+       *  back-end would have an easier time traversing for routing algorithm
     */
     protected void initializePathOverlay() {
         Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>());

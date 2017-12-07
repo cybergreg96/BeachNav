@@ -6,19 +6,11 @@ package com.project.beachnav.beachnav.other;
  * node class
  */
 
-import android.graphics.Color;
-import android.location.Location;
-
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.PolylineOptions;
-
 import java.util.ArrayList;
 
 public class Node {
     String label;
-    double lat;
-    double lng;
+    double lat, lng;
     ArrayList<Node> adjacent;
 
 
@@ -29,8 +21,17 @@ public class Node {
         adjacent = new ArrayList<Node>();
     }
 
-    //Austin Tao 11/2/2017
-    //no need for new ArrayList<Node>() every time
+//    Austin Tao 12/6/2017
+//    the only node that's gonna use this is the current location
+    public Node(double x, double y) {
+        label = "You are here";
+        lat = x;
+        lng = y;
+        adjacent = new ArrayList<Node>();
+    }
+
+//    Austin Tao 11/2/2017
+//    no need for new ArrayList<Node>() every time
     public Node(String name, double x, double y) {
         label = name;
         lat = x;
@@ -88,33 +89,33 @@ public class Node {
         return path;
     }
 
-    /* Void method drawPath iterates through the shortestPath to generate a Location ArrayList using
-    * Node 'x' and 'y' values for latitude and longitude coordinates. Method then creates a Polyline
-    * object to draw lines between the locations, later adding it to the Google Map Object*/
-    /*public static void drawPath(ArrayList<Node> shortestPath, GoogleMap mMap) {
-//        Node[] nodeArr = (Node[])shortestPath.toArray();
-        Node[] nodeArr = new Node[shortestPath.size()];
-        int w = 0;
-        for (Node n : shortestPath) {
-            nodeArr[w] = n;
-            w++;
-        }
-        ArrayList<Location> drawnLocs = new ArrayList<Location>();
-        PolylineOptions lineToDraw = new PolylineOptions(); //Line object compatible with locations
-        lineToDraw.color(Color.parseColor("#CC0000FF"));
-        lineToDraw.width(5);
-        lineToDraw.visible(true);
-        for (int i = 0; i < nodeArr.length; i++) { //Iterates through nodeArr to create Location ArrayList
-            Location toAdd = new Location(""); //Provider is unnecessary for this method
-            toAdd.setLatitude(nodeArr[i].getX()); //uses Node x value for latitude
-            toAdd.setLongitude(nodeArr[i].getY()); //uses Node y value for longitude
-            drawnLocs.add(toAdd);
-        }
-        for (Location drawn : drawnLocs) { //Draws through LatLng objects created from location arrlist
-            lineToDraw.add(new LatLng(drawn.getLatitude(), drawn.getLongitude()));
-        }
-        mMap.addPolyline(lineToDraw); //adds lines to visible map
-    }*/
+///* Void method drawPath iterates through the shortestPath to generate a Location ArrayList using
+//* Node 'x' and 'y' values for latitude and longitude coordinates. Method then creates a Polyline
+//* object to draw lines between the locations, later adding it to the Google Map Object*/
+///*public static void drawPath(ArrayList<Node> shortestPath, GoogleMap mMap) {
+//    Node[] nodeArr = (Node[])shortestPath.toArray();
+//    Node[] nodeArr = new Node[shortestPath.size()];
+//    int w = 0;
+//    for (Node n : shortestPath) {
+//        nodeArr[w] = n;
+//        w++;
+//    }
+//    ArrayList<Location> drawnLocs = new ArrayList<Location>();
+//    PolylineOptions lineToDraw = new PolylineOptions(); //Line object compatible with locations
+//    lineToDraw.color(Color.parseColor("#CC0000FF"));
+//    lineToDraw.width(5);
+//    lineToDraw.visible(true);
+//    for (int i = 0; i < nodeArr.length; i++) { //Iterates through nodeArr to create Location ArrayList
+//        Location toAdd = new Location(""); //Provider is unnecessary for this method
+//        toAdd.setLatitude(nodeArr[i].getX()); //uses Node x value for latitude
+//        toAdd.setLongitude(nodeArr[i].getY()); //uses Node y value for longitude
+//        drawnLocs.add(toAdd);
+//    }
+//    for (Location drawn : drawnLocs) { //Draws through LatLng objects created from location arrlist
+//        lineToDraw.add(new LatLng(drawn.getLatitude(), drawn.getLongitude()));
+//    }
+//    mMap.addPolyline(lineToDraw); //adds lines to visible map
+//}*/
 
     //Setters and getters
     public void setAdjacent(Node other) {
