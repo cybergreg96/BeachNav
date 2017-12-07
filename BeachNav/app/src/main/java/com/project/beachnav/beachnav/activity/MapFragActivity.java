@@ -1,13 +1,16 @@
 package com.project.beachnav.beachnav.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -21,6 +24,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -29,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.beachnav.beachnav.R;
 import com.project.beachnav.beachnav.other.Node;
 import com.project.beachnav.beachnav.other.PathHandler;
+import com.project.beachnav.beachnav.other.UserLocation;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -53,14 +58,14 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     private Node address = null;
     private ArrayList<Node> path;
     private PathHandler ph;
+    private Location myLocation;
 
-    private LocationManager locationManager;
-
+    private UserLocation userLocation;
+    double userLat, userLong;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.BN_map);
@@ -80,12 +85,12 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                         && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     onSearch(v); return true;
                 } return false;
-        }   });
+            }   });
         location_tf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 location_tf.setText("");
-        }   });
+            }   });
 
         Button routeButton = findViewById(R.id.route);
         routeButton.setOnClickListener(new View.OnClickListener() {
@@ -103,74 +108,6 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        //check if location is enabled
-        if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
-                    System.out.println("Lat: " + location.getLatitude() + "\nLong: "+ location.getLongitude());
-                    m = mMap.addMarker(new MarkerOptions().position(userLocation).title("Your Location"));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(userLocation));
-                }
-
-                @Override
-                public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String s) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String s) {
-
-                }
-            });
-        } else if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
-                    System.out.println("Lat: " + location.getLatitude() + "\nLong: "+ location.getLongitude());
-                    m = mMap.addMarker(new MarkerOptions().position(userLocation).title("Your Location"));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(userLocation));
-                }
-
-                @Override
-                public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String s) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String s) {
-
-                }
-            });
-        } else {
-//            System.out.println("User location is disabled");
-            Log.e("LOCATION_DISABLED", "User location is disabled");
-        }
     }
 
 //    @Override
@@ -193,12 +130,12 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //        }
 //    }
 
-   /**
-    * Will find a location that matches the search item as best as possible.
-    * (Mapped to search dialog the same way findLocation was to that button)
-    * ..we need to be able to handle anything that the search dialog can give
-    *  -> auto-suggestions from a database?
-    */
+    /**
+     * Will find a location that matches the search item as best as possible.
+     * (Mapped to search dialog the same way findLocation was to that button)
+     * ..we need to be able to handle anything that the search dialog can give
+     *  -> auto-suggestions from a database?
+     */
 
 
     public void onSearch(View v) {
@@ -222,7 +159,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             } catch (Exception e) { //what happens when location is not in the hashmap? this does
                 location_tf.setError("Location not found. Try another location.");
-        }   }
+            }   }
     }
 
     //event handler for route button, finds shortest path from current location to searched location
@@ -248,8 +185,16 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
     //event handler for location button, finds current location
     public void findCurrentLocation() {
-        Toast.makeText(this, "You are here", Toast.LENGTH_SHORT).show();
+        //user location
+        userLocation = new UserLocation(getApplicationContext());
+        myLocation = userLocation.getLocation();
+        userLat = myLocation.getLatitude();
+        userLong = myLocation.getLongitude();
+        LatLng latLng = new LatLng(userLat,userLong);
+        m = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
+
 
     /**
      * Manipulates the map once available.
