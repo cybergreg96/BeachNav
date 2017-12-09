@@ -23,12 +23,12 @@ public class Node {
 
 //    Austin Tao 12/6/2017
 //    the only node that's gonna use this is the current location
-    public Node(double x, double y) {
-        label = "You are here";
-        lat = x;
-        lng = y;
-        adjacent = new ArrayList<Node>();
-    }
+//    public Node(double x, double y) {
+//        label = "You are here";
+//        lat = x;
+//        lng = y;
+//        adjacent = new ArrayList<Node>();
+//    }
 
 //    Austin Tao 11/2/2017
 //    no need for new ArrayList<Node>() every time
@@ -46,19 +46,32 @@ public class Node {
         adjacent = nextList;
     }
 
+//    Austin Leavitt 12/7/2017
+//    the current location that just might work (maybe)
+    public Node(String name, double x, double y, ArrayList<Node> nextList, LocationSet z)
+    {
+        label = name;
+        lng = x;
+        lat = y;
+        adjacent = nextList;
+        z.add(this);
+    }
+
+
     //Implements the distance formula to find the distance between two points (using a straight line)
     private double getDistance(Node other) {
-        double x1 = lng;
-        double y1 = lat;
-        double x2 = other.getY();
-        double y2 = other.getX();
-        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        double x1 = lat;
+        double y1 = lng;
+        double x2 = other.getX();
+        double y2 = other.getY();
+        return Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2));
     }
 
 
     //Returns the node that is closest to the current one and goes in the direction of the destination
     private Node getShortest(Node destination) {
-        Node shortest = new Node("Dummy", Double.MAX_VALUE,Double.MIN_VALUE, new ArrayList<Node>());
+        LocationSet blank = new LocationSet();
+        Node shortest = new Node("Dummy", Double.MAX_VALUE,Double.MIN_VALUE, new ArrayList<Node>(),blank);
         for(Node x: adjacent) {
             if(this.getDistance(x) < this.getDistance(shortest)
                     && this.getDistance(destination) > x.getDistance(destination)) {
@@ -76,16 +89,15 @@ public class Node {
 
         //Adding nodes to path
         Node current = start;
+        Node prev = current;
+
 
         while(current.getDistance(destination) != 0) {
-            Node prev = current;
+            prev = current;
             current = current.getShortest(destination);
             path.add(prev);
-//            System.out.println(prev.getLabel());
         }
-//        System.out.println(current.getLabel());
         path.add(current);
-
         return path;
     }
 
@@ -125,17 +137,21 @@ public class Node {
         return adjacent;
     }
 
+    public void setCoordinates(double x, double y) {
+        lng = x; lat = y;
+    }
+
     public void setX(double x) {
         lng = x;
     }
     public void setY(double y) {
         lat = y;
     }
-    public double getY() {
-        return lng;
-    }
     public double getX() {
         return lat;
+    }
+    public double getY() {
+        return lng;
     }
 
     public void setLabel(String name) {

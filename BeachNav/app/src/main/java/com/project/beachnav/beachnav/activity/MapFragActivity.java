@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.beachnav.beachnav.R;
+import com.project.beachnav.beachnav.other.LocationSet;
 import com.project.beachnav.beachnav.other.Node;
 import com.project.beachnav.beachnav.other.PathHandler;
 import com.project.beachnav.beachnav.other.UserLocation;
@@ -43,8 +44,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     private Map<String, Node> mapPlaces = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private EditText location_tf;
 
-    private Marker searched_location;
-    private Marker user_location;
+    private Marker searched_location,  user_location;
 
     private Node currentLoc = null;
     private Node searchedLoc = null;
@@ -54,6 +54,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
     private UserLocation userLocation;
     double userLat, userLong;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,11 +64,11 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.BN_map);
         mapFragment.getMapAsync(this);
 
-        if (savedInstanceState != null) {
-            String mId = savedInstanceState.getString("searched_location");
-        }
+//        if (savedInstanceState != null) {
+//            String mId = savedInstanceState.getString("searched_location");
+//        }
 
-        initializePathOverlay();
+        initializePathOverlay(); //currentLoc is instantiated here
 
         location_tf = findViewById(R.id.editText);
         location_tf.setOnKeyListener(new View.OnKeyListener() {
@@ -131,7 +132,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
     public void onSearch(View v) {
 //  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
-        if (searched_location != null) {searched_location.remove();}
+//        if (searched_location != null) {searched_location.remove();}
         if (path != null) {
             path = null; //and then un-draw the path (with removePath()), and leave the marker
             pathHandler.clearPath();
@@ -146,7 +147,10 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 searchedLoc = mapPlaces.get(location);
                 LatLng latLng = new LatLng(searchedLoc.getX(),searchedLoc.getY());
 //              System.out.println("Latitude: "+searchedLoc.getY()+" Longitude: "+searchedLoc.getX());
-                searched_location = mMap.addMarker(new MarkerOptions().position(latLng).title(searchedLoc.getLabel()));
+                if (searched_location != null) { searched_location.setPosition(latLng);
+                    searched_location.setTitle(searchedLoc.getLabel());
+                } else
+                    searched_location = mMap.addMarker(new MarkerOptions().position(latLng).title(searchedLoc.getLabel()));
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             } catch (Exception e) { //what happens when location is not in the hashmap? this does
                 location_tf.setError("Location not found. Try another location.");
@@ -179,20 +183,19 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     //event handler for location button, finds current location using UserLocation
     public void findCurrentLocation() {
         //user location
-        if (user_location != null) {user_location.remove();}
+//        if (user_location != null) {user_location.remove();}
 
         userLocation = new UserLocation(getApplicationContext());
-        myLocation = userLocation.getLocation();
+        myLocation = userLocation.getLocation(); //get location coordinates
         userLat = myLocation.getLatitude();
         userLong = myLocation.getLongitude();
 
-        currentLoc = new Node(userLat, userLong);
-//        would be good if this was here but we would have to figure out how to
-//        convert the user's location
+        currentLoc.setCoordinates(userLat, userLong); //updates currentLoc coordinates
 
-        LatLng latLng = new LatLng(userLat,userLong);
-        user_location = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        LatLng latLng = new LatLng(userLat,userLong); //updates currentLoc marker (user_location)
+        if (user_location != null) user_location.setPosition(latLng);
+        else
+            user_location = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
     }
 
 
@@ -213,13 +216,15 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         sett.setZoomControlsEnabled(false);
         sett.setScrollGesturesEnabled(true);
         mMap.setMinZoomPreference(15.0f);
-        mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
+//        mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
         LatLng CSULB = new LatLng(33.7819, -118.1162);
         GroundOverlayOptions csulbMap = new GroundOverlayOptions()
                 .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016_edited))
                 .position(CSULB, 1552f, 1560f);
         mMap.addGroundOverlay(csulbMap);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
+
+//        findCurrentLocation(); //after instantiation with initializePathOverlay(), this updates it
 
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
@@ -228,8 +233,6 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //            return;
 //        }
 //        mMap.setMyLocationEnabled(true);   // something to look at
-
-//        findCurrentLocation(); // this would come up at the end to immediately get location
     }
 
     @Override
@@ -268,183 +271,187 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
        *  back-end would have an easier time traversing for routing algorithm
     */
     protected void initializePathOverlay() {
-        Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>());
-        Node en2 = new Node("EN2",33.783215, -118.110925, new ArrayList<Node>());
-        Node en3 = new Node("EN3", 33.783694, -118.111157, new ArrayList<Node>());
-        Node en4 = new Node("EN4",33.783681, -118.110674, new ArrayList<Node>());
-        Node vec = new Node("VEC",33.782818, -118.110636, new ArrayList<Node>());
-        Node outpost = new Node("Outpost",33.782340, -118.110410, new ArrayList<Node>());
-        Node sspa = new Node ("SSPA", 33.782017, -118.110383, new ArrayList<Node>());
-        Node HC = new Node("Horn Center",33.783444, -118.113983, new ArrayList<Node>());
-        Node UAM = new Node("Museum", 33.783425, -118.114629, new ArrayList<Node>());
-        Node kin = new Node("Kinesiology", 33.782898, -118.112586, new ArrayList<Node>());
-        Node srwc = new Node("srwc",33.785038, -118.109484,new ArrayList<Node>());
-        Node hhs1 = new Node("hhs1",33.782388, -118.112801,new ArrayList<Node>());
-        Node hhs2 = new Node("hhs2", 33.782384, -118.112125, new ArrayList<Node>());
-        Node hhsGnrl = new Node("hhs", 33.782326, -118.112490, new ArrayList<Node>());
-        Node bh = new Node("Brotman Hall",33.782659, -118.115339, new ArrayList<Node>());
-        Node usu = new Node("Student Union",33.781281, -118.113450, new ArrayList<Node>());
-        Node cp = new Node("Central Plant",33.781316, -118.112386, new ArrayList<Node>());
-        Node cafe = new Node("Cafe",33.780574, -118.114071, new ArrayList<Node>());
-        Node bks = new Node("Bookstore",33.779974, -118.114158,new ArrayList<Node>());
-        Node mlsc = new Node("Molecular Science",33.780301, -118.112488,new ArrayList<Node>());
-        Node hsci = new Node("Hall of Science",33.779830, -118.112639,new ArrayList<Node>());
-        Node mic = new Node("Microbiology",33.779429, -118.111720, new ArrayList<Node>());
-        Node ph1 = new Node("Peterson Hall 1",33.778898, -118.112505, new ArrayList<Node>());
-        Node ph2 = new Node("Peterson Hall 2",33.779272, -118.112482, new ArrayList<Node>());
-        Node fa1 = new Node("FA1",33.777211, -118.112557, new ArrayList<Node>());
-        Node fa2 = new Node("FA2",33.777474, -118.112361, new ArrayList<Node>());
-        Node fa3 = new Node("FA3",33.777935, -118.112311, new ArrayList<Node>());
-        Node fa4 = new Node("FA4",33.778336, -118.112741, new ArrayList<Node>());
-        Node ut = new Node("University Theatre",33.776733, -118.112113,new ArrayList<Node>());
-        Node utc = new Node("UTC", 33.776735, -118.111652,new ArrayList<Node>());
-        Node ta = new Node("TA",33.776510, -118.112639,new ArrayList<Node>());
-        Node mhb = new Node("Macintosh Building",33.776882, -118.113202,new ArrayList<Node>());
-        Node as = new Node("as", 33.777009, -118.114096, new ArrayList<Node>());
-        Node lib = new Node("Library", 33.777207, -118.114842, new ArrayList<Node>());
-        Node la1 = new Node("Liberal Arts 1", 33.777664, -118.114713, new ArrayList<Node>());
-        Node la2 = new Node("Liberal Arts 2",33.777987, -118.114547,new ArrayList<Node>());
-        Node la3 = new Node("Liberal Arts 3",33.778292, -118.114440,new ArrayList<Node>());
-        Node la4 = new Node("Liberal Arts 4",33.778566, -118.114338,new ArrayList<Node>());
-        Node la5 = new Node("Liberal Arts 5",33.778898, -118.114241,new ArrayList<Node>());
-        Node lh = new Node("Lecture Hall",33.778187, -118.113976,new ArrayList<Node>());
-        Node cla = new Node("CLA",33.777815, -118.114132,new ArrayList<Node>());
-        Node psy = new Node("Psychology",33.779318, -118.114439,new ArrayList<Node>());
-        Node ed2 = new Node("Education 2",33.775727, -118.114354,new ArrayList<Node>());
-        Node eed = new Node("EED",33.776224, -118.114156,new ArrayList<Node>());
-        Node mmc = new Node("Multimedia Center",33.776768, -118.114561,new ArrayList<Node>());
-        Node annex = new Node("ANNEX",33.777081, -118.111909,new ArrayList<Node>());
-        Node lab = new Node("Language Arts Building",33.776887, -118.112687, new ArrayList<Node>());
-        Node fo2 = new Node("Faculty Office 2",33.778497, -118.113910,new ArrayList<Node>());
-        Node fo3 = new Node("Faculty Office 3",33.779128, -118.113688,new ArrayList<Node>());
-        Node fo4 = new Node("Faculty Office 4",33.778202, -118.111990,new ArrayList<Node>());
-        Node fo5 = new Node("Faculty Office 5",33.779103, -118.112462,new ArrayList<Node>());
-        Node pp  = new Node("Prospector Pete", 33.778759, -118.113802, new ArrayList<Node>());
-        Node cba = new Node("cba", 33.784164, -118.115942, new ArrayList<Node>());
-        Node et = new Node("et", 33.783197, -118.109718, new ArrayList<Node>());
-        Node hsd = new Node("hsd", 33.782707, -118.109834, new ArrayList<Node>());
-        Node desn = new Node("desn", 33.782315, -118.109727, new ArrayList<Node>());
-        Node fnd = new Node("fnd", 33.781343, -118.110574, new ArrayList<Node>());
-        Node ten = new Node("Tennis Court", 33.784364, -118.111129, new ArrayList<Node>());
-        Node rug = new Node("Rugby Field", 33.784874, -118.112103, new ArrayList<Node>());
-        Node base = new Node("Baseball Field", 33.786143, -118.112494, new ArrayList<Node>());
-        Node umc = new Node("UMC", 33.787452, -118.112444, new ArrayList<Node>());
-        Node pyramid = new Node("Pyramid", 33.787498, -118.114410, new ArrayList<Node>());
-        Node bac = new Node("bac", 33.786426, -118.114875, new ArrayList<Node>());
-        Node pk1 = new Node("Parking Structure 1", 33.786230, -118.115756, new ArrayList<Node>());
-        Node track = new Node("Track and Field", 33.785235, -118.114807, new ArrayList<Node>());
-        Node shs = new Node("SHS", 33.782366, -118.117901, new ArrayList<Node>());
-        Node ms = new Node("MS", 33.783378, -118.109841, new ArrayList<Node>());
-        Node corp = new Node("corp", 33.783655, -118.109197, new ArrayList<Node>());
-        Node rec = new Node("rec", 33.785023, -118.109181, new ArrayList<Node>());
-        Node dc = new Node("DC", 33.788187, -118.113302, new ArrayList<Node>());
-        Node cpac = new Node("CPAC", 33.788116, -118.112138, new ArrayList<Node>());
-        Node fcs = new Node("fcs", 33.781730, -118.115503, new ArrayList<Node>());
-        Node sor = new Node("sor", 33.781767, -118.116915, new ArrayList<Node>());
-        Node kkjz = new Node("kkjz", 33.777561, -118.114135, new ArrayList<Node>());
-        Node acs = new Node("acs", 33.776767, -118.113819, new ArrayList<Node>());
-        Node nur = new Node("nur", 33.781781, -118.117846, new ArrayList<Node>());
-        Node park = new Node("parkside", 33.786900, -118.119132, new ArrayList<Node>());
-        Node jg = new Node("Japanese Garden", 33.785021, -118.119393, new ArrayList<Node>());
-        Node hill = new Node("Hillside", 33.782335, -118.118658, new ArrayList<Node>());
+        //Array of All Nodes
+        LocationSet set = new LocationSet();
+
+        //Campus Location Nodes
+        Node ecs = new Node("ECS",33.783529, -118.110287, new ArrayList<Node>(),set);
+        Node en2 = new Node("EN2",33.783215, -118.110925, new ArrayList<Node>(),set);
+        Node en3 = new Node("EN3", 33.783694, -118.111157, new ArrayList<Node>(),set);
+        Node en4 = new Node("EN4",33.783681, -118.110674, new ArrayList<Node>(),set);
+        Node vec = new Node("VEC",33.782818, -118.110636, new ArrayList<Node>(),set);
+        Node outpost = new Node("Outpost",33.782340, -118.110410, new ArrayList<Node>(),set);
+        Node sspa = new Node ("SSPA", 33.782017, -118.110383, new ArrayList<Node>(),set);
+        Node HC = new Node("Horn Center",33.783444, -118.113983, new ArrayList<Node>(),set);
+        Node UAM = new Node("Museum", 33.783425, -118.114629, new ArrayList<Node>(),set);
+        Node kin = new Node("Kinesiology", 33.782898, -118.112586, new ArrayList<Node>(),set);
+        Node srwc = new Node("srwc",33.785038, -118.109484,new ArrayList<Node>(),set);
+        Node hhs1 = new Node("hhs1",33.782388, -118.112801,new ArrayList<Node>(),set);
+        Node hhs2 = new Node("hhs2", 33.782384, -118.112125, new ArrayList<Node>(),set);
+        Node hhsGnrl = new Node("hhs", 33.782326, -118.112490, new ArrayList<Node>(),set);
+        Node bh = new Node("Brotman Hall",33.782659, -118.115339, new ArrayList<Node>(),set);
+        Node usu = new Node("Student Union",33.781281, -118.113450, new ArrayList<Node>(),set);
+        Node cp = new Node("Central Plant",33.781316, -118.112386, new ArrayList<Node>(),set);
+        Node cafe = new Node("Cafe",33.780574, -118.114071, new ArrayList<Node>(),set);
+        Node bks = new Node("Bookstore",33.779974, -118.114158,new ArrayList<Node>(),set);
+        Node mlsc = new Node("Molecular Science",33.780301, -118.112488,new ArrayList<Node>(),set);
+        Node hsci = new Node("Hall of Science",33.779830, -118.112639,new ArrayList<Node>(),set);
+        Node mic = new Node("Microbiology",33.779429, -118.111720, new ArrayList<Node>(),set);
+        Node ph1 = new Node("Peterson Hall 1",33.778898, -118.112505, new ArrayList<Node>(),set);
+        Node ph2 = new Node("Peterson Hall 2",33.779272, -118.112482, new ArrayList<Node>(),set);
+        Node fa1 = new Node("FA1",33.777211, -118.112557, new ArrayList<Node>(),set);
+        Node fa2 = new Node("FA2",33.777474, -118.112361, new ArrayList<Node>(),set);
+        Node fa3 = new Node("FA3",33.777935, -118.112311, new ArrayList<Node>(),set);
+        Node fa4 = new Node("FA4",33.778336, -118.112741, new ArrayList<Node>(),set);
+        Node ut = new Node("University Theatre",33.776733, -118.112113,new ArrayList<Node>(),set);
+        Node utc = new Node("UTC", 33.776735, -118.111652,new ArrayList<Node>(),set);
+        Node ta = new Node("TA",33.776510, -118.112639,new ArrayList<Node>(),set);
+        Node mhb = new Node("Macintosh Building",33.776882, -118.113202,new ArrayList<Node>(),set);
+        Node as = new Node("as", 33.777009, -118.114096, new ArrayList<Node>(),set);
+        Node lib = new Node("Library", 33.777207, -118.114842, new ArrayList<Node>(),set);
+        Node la1 = new Node("Liberal Arts 1", 33.777664, -118.114713, new ArrayList<Node>(),set);
+        Node la2 = new Node("Liberal Arts 2",33.777987, -118.114547,new ArrayList<Node>(),set);
+        Node la3 = new Node("Liberal Arts 3",33.778292, -118.114440,new ArrayList<Node>(),set);
+        Node la4 = new Node("Liberal Arts 4",33.778566, -118.114338,new ArrayList<Node>(),set);
+        Node la5 = new Node("Liberal Arts 5",33.778898, -118.114241,new ArrayList<Node>(),set);
+        Node lh = new Node("Lecture Hall",33.778187, -118.113976,new ArrayList<Node>(),set);
+        Node cla = new Node("CLA",33.777815, -118.114132,new ArrayList<Node>(),set);
+        Node psy = new Node("Psychology",33.779318, -118.114439,new ArrayList<Node>(),set);
+        Node ed2 = new Node("Education 2",33.775727, -118.114354,new ArrayList<Node>(),set);
+        Node eed = new Node("EED",33.776224, -118.114156,new ArrayList<Node>(),set);
+        Node mmc = new Node("Multimedia Center",33.776768, -118.114561,new ArrayList<Node>(),set);
+        Node annex = new Node("ANNEX",33.777081, -118.111909,new ArrayList<Node>(),set);
+        Node lab = new Node("Language Arts Building",33.776887, -118.112687, new ArrayList<Node>(),set);
+        Node fo2 = new Node("Faculty Office 2",33.778497, -118.113910,new ArrayList<Node>(),set);
+        Node fo3 = new Node("Faculty Office 3",33.779128, -118.113688,new ArrayList<Node>(),set);
+        Node fo4 = new Node("Faculty Office 4",33.778202, -118.111990,new ArrayList<Node>(),set);
+        Node fo5 = new Node("Faculty Office 5",33.779103, -118.112462,new ArrayList<Node>(),set);
+        Node pp  = new Node("Prospector Pete", 33.778759, -118.113802, new ArrayList<Node>(),set);
+        Node cba = new Node("cba", 33.784164, -118.115942, new ArrayList<Node>(),set);
+        Node et = new Node("et", 33.783197, -118.109718, new ArrayList<Node>(),set);
+        Node hsd = new Node("hsd", 33.782707, -118.109834, new ArrayList<Node>(),set);
+        Node desn = new Node("desn", 33.782315, -118.109727, new ArrayList<Node>(),set);
+        Node fnd = new Node("fnd", 33.781343, -118.110574, new ArrayList<Node>(),set);
+        Node ten = new Node("Tennis Court", 33.784364, -118.111129, new ArrayList<Node>(),set);
+        Node rug = new Node("Rugby Field", 33.784874, -118.112103, new ArrayList<Node>(),set);
+        Node base = new Node("Baseball Field", 33.786143, -118.112494, new ArrayList<Node>(),set);
+        Node umc = new Node("UMC", 33.787452, -118.112444, new ArrayList<Node>(),set);
+        Node pyramid = new Node("Pyramid", 33.787498, -118.114410, new ArrayList<Node>(),set);
+        Node bac = new Node("bac", 33.786426, -118.114875, new ArrayList<Node>(),set);
+        Node pk1 = new Node("Parking Structure 1", 33.786230, -118.115756, new ArrayList<Node>(),set);
+        Node track = new Node("Track and Field", 33.785235, -118.114807, new ArrayList<Node>(),set);
+        Node shs = new Node("SHS", 33.782366, -118.117901, new ArrayList<Node>(),set);
+        Node ms = new Node("MS", 33.783378, -118.109841, new ArrayList<Node>(),set);
+        Node corp = new Node("corp", 33.783655, -118.109197, new ArrayList<Node>(),set);
+        Node rec = new Node("rec", 33.785023, -118.109181, new ArrayList<Node>(),set);
+        Node dc = new Node("DC", 33.788187, -118.113302, new ArrayList<Node>(),set);
+        Node cpac = new Node("CPAC", 33.788116, -118.112138, new ArrayList<Node>(),set);
+        Node fcs = new Node("fcs", 33.781730, -118.115503, new ArrayList<Node>(),set);
+        Node sor = new Node("sor", 33.781767, -118.116915, new ArrayList<Node>(),set);
+        Node kkjz = new Node("kkjz", 33.777561, -118.114135, new ArrayList<Node>(),set);
+        Node acs = new Node("acs", 33.776767, -118.113819, new ArrayList<Node>(),set);
+        Node nur = new Node("nur", 33.781781, -118.117846, new ArrayList<Node>(),set);
+        Node park = new Node("parkside", 33.786900, -118.119132, new ArrayList<Node>(),set);
+        Node jg = new Node("Japanese Garden", 33.785021, -118.119393, new ArrayList<Node>(),set);
+        Node hill = new Node("Hillside", 33.782335, -118.118658, new ArrayList<Node>(),set);
 
         // = new Node("", , new ArrayList<Node>());
         //Intermediate Nodes
-        Node a1 = new Node("sw of LA1", 33.777617, -118.115114, new ArrayList<Node>());
-        Node a2 = new Node("se of LA1", 33.777447, -118.114372, new ArrayList<Node>());
-        Node a3 = new Node("ne of LA1", 33.777765, -118.114274, new ArrayList<Node>());
-        Node a4 = new Node("nw of LA1", 33.777950, -118.115012, new ArrayList<Node>());
-        Node a5 = new Node("nw of LA2", 33.778180, -118.114933, new ArrayList<Node>());
-        Node a6 = new Node("ne of LA2", 33.778013, -118.114193, new ArrayList<Node>());
-        Node a7 = new Node("w of LA3",  33.778378, -118.114874, new ArrayList<Node>());
-        Node a8 = new Node("nw of LA4", 33.778837, -118.114724, new ArrayList<Node>());
-        Node a9 = new Node("se of LA4", 33.778340, -118.114083, new ArrayList<Node>());
-        Node b1 = new Node("ne of LA4", 33.778670, -118.113984, new ArrayList<Node>());
-        Node b2 = new Node("w of LA2",  33.777943, -118.115013, new ArrayList<Node>());
-        Node b3 = new Node("e of LA5",  33.778906, -118.113902, new ArrayList<Node>());
-        Node b4 = new Node("e of PSY",  33.779410, -118.113759, new ArrayList<Node>());
-        Node b5 = new Node("Psy central", 33.779431, -118.114160, new ArrayList<Node>());
-        Node b6 = new Node("se of bookstore", 33.779757, -118.113748, new ArrayList<Node>());
-        Node b7 = new Node("south of Amazon", 33.779775, -118.114651, new ArrayList<Node>());
-        Node b8 = new Node("ne of bookstore", 33.780159, -118.113773, new ArrayList<Node>());
-        Node b9 = new Node("w quad", 33.778242, -118.113685, new ArrayList<Node>());
-        Node c1 = new Node("e quad", 33.778104, -118.113037, new ArrayList<Node>());
-        Node c2 = new Node("nw of school of art", 33.778559, -118.112845, new ArrayList<Node>());
-        Node c3 = new Node("ph right entrance", 33.778777, -118.112808, new ArrayList<Node>());
-        Node c4 = new Node("sw of ph", 33.778955, -118.113447, new ArrayList<Node>());
-        Node c5 = new Node("right of pp", 33.778706, -118.113535, new ArrayList<Node>());
-        Node c6 = new Node("top x", 33.778467, -118.113249, new ArrayList<Node>());
-        Node c7 = new Node("bottom x", 33.777673, -118.113507, new ArrayList<Node>());
-        Node c8 = new Node("bottom of grass", 33.777245, -118.113614, new ArrayList<Node>());
-        Node c9 = new Node("bottom right of grass", 33.777194, -118.113303, new ArrayList<Node>());
-        Node d1 = new Node("left of Macintosh building", 33.776885, -118.113424, new ArrayList<Node>());
-        Node d2 = new Node("bottom left of grass", 33.777341, -118.113985, new ArrayList<Node>());
-        Node d3 = new Node("top left of grass", 33.778967, -118.113454, new ArrayList<Node>());
-        Node d4 = new Node("north of academic service building", 33.776936, -118.113623, new ArrayList<Node>());
-        Node d5 = new Node("nw of FO4", 33.778397, -118.112206, new ArrayList<Node>());
-        Node d6 = new Node("sw of FO4", 33.778118, -118.112274, new ArrayList<Node>());
-        Node d7 = new Node("right inner corner of fa4", 33.778170, -118.112587, new ArrayList<Node>());
-        Node d8 = new Node("sw of FA3", 33.777556, -118.112774, new ArrayList<Node>());
-        Node d9 = new Node("sw of FA2", 33.777452, -118.112814, new ArrayList<Node>());
-        Node e1 = new Node("s of FA1", 33.777093, -118.112925, new ArrayList<Node>());
-        Node e2 = new Node("west of theater", 33.776661, -118.112385, new ArrayList<Node>());
-        Node e3 = new Node("e of FA1", 33.777196, -118.112004, new ArrayList<Node>());
-        Node e4 = new Node("nw of ph2", 33.779627, -118.113245, new ArrayList<Node>());
-        Node e5 = new Node("w of fo5", 33.779248, -118.113347, new ArrayList<Node>());
-        Node e6 = new Node("nw of hsci", 33.780154, -118.113082, new ArrayList<Node>());
-        Node e7 = new Node("nw of mlsc", 33.780568, -118.112938, new ArrayList<Node>());
-        Node e8 = new Node("USU e entrance", 33.781293, -118.112982, new ArrayList<Node>());
-        Node e9 = new Node("School Central", 33.782037, -118.112519, new ArrayList<Node>());
-        Node f1 = new Node("North of USU", 33.782032, -118.113422, new ArrayList<Node>());
-        Node f2 = new Node("SW of Kin Building", 33.782492, -118.113426, new ArrayList<Node>());
-        Node f3 = new Node("W of Kin Building", 33.782946, -118.113560, new ArrayList<Node>());
-        Node f4 = new Node("se of CBA", 33.783606, -118.115491, new ArrayList<Node>());
-        Node f5 = new Node("ne of USU", 33.781626, -118.112603, new ArrayList<Node>());
-        Node f6 = new Node("nw of usu", 33.782005, -118.114623, new ArrayList<Node>());
-        Node f7 = new Node("north of lib", 33.777431, -118.114376, new ArrayList<Node>());
+        Node a1 = new Node("sw of LA1", 33.777617, -118.115114, new ArrayList<Node>(),set);
+        Node a2 = new Node("se of LA1", 33.777447, -118.114372, new ArrayList<Node>(),set);
+        Node a3 = new Node("ne of LA1", 33.777765, -118.114274, new ArrayList<Node>(),set);
+        Node a4 = new Node("nw of LA1", 33.777950, -118.115012, new ArrayList<Node>(),set);
+        Node a5 = new Node("nw of LA2", 33.778180, -118.114933, new ArrayList<Node>(),set);
+        Node a6 = new Node("ne of LA2", 33.778013, -118.114193, new ArrayList<Node>(),set);
+        Node a7 = new Node("w of LA3",  33.778378, -118.114874, new ArrayList<Node>(),set);
+        Node a8 = new Node("nw of LA4", 33.778837, -118.114724, new ArrayList<Node>(),set);
+        Node a9 = new Node("se of LA4", 33.778340, -118.114083, new ArrayList<Node>(),set);
+        Node b1 = new Node("ne of LA4", 33.778670, -118.113984, new ArrayList<Node>(),set);
+        Node b2 = new Node("w of LA2",  33.777943, -118.115013, new ArrayList<Node>(),set);
+        Node b3 = new Node("e of LA5",  33.778906, -118.113902, new ArrayList<Node>(),set);
+        Node b4 = new Node("e of PSY",  33.779410, -118.113759, new ArrayList<Node>(),set);
+        Node b5 = new Node("Psy central", 33.779431, -118.114160, new ArrayList<Node>(),set);
+        Node b6 = new Node("se of bookstore", 33.779757, -118.113748, new ArrayList<Node>(),set);
+        Node b7 = new Node("south of Amazon", 33.779775, -118.114651, new ArrayList<Node>(),set);
+        Node b8 = new Node("ne of bookstore", 33.780159, -118.113773, new ArrayList<Node>(),set);
+        Node b9 = new Node("w quad", 33.778242, -118.113685, new ArrayList<Node>(),set);
+        Node c1 = new Node("e quad", 33.778104, -118.113037, new ArrayList<Node>(),set);
+        Node c2 = new Node("nw of school of art", 33.778559, -118.112845, new ArrayList<Node>(),set);
+        Node c3 = new Node("ph right entrance", 33.778777, -118.112808, new ArrayList<Node>(),set);
+        Node c4 = new Node("sw of ph", 33.778955, -118.113447, new ArrayList<Node>(),set);
+        Node c5 = new Node("right of pp", 33.778706, -118.113535, new ArrayList<Node>(),set);
+        Node c6 = new Node("top x", 33.778467, -118.113249, new ArrayList<Node>(),set);
+        Node c7 = new Node("bottom x", 33.777673, -118.113507, new ArrayList<Node>(),set);
+        Node c8 = new Node("bottom of grass", 33.777245, -118.113614, new ArrayList<Node>(),set);
+        Node c9 = new Node("bottom right of grass", 33.777194, -118.113303, new ArrayList<Node>(),set);
+        Node d1 = new Node("left of Macintosh building", 33.776885, -118.113424, new ArrayList<Node>(),set);
+        Node d2 = new Node("bottom left of grass", 33.777341, -118.113985, new ArrayList<Node>(),set);
+        Node d3 = new Node("top left of grass", 33.778967, -118.113454, new ArrayList<Node>(),set);
+        Node d4 = new Node("north of academic service building", 33.776936, -118.113623, new ArrayList<Node>(),set);
+        Node d5 = new Node("nw of FO4", 33.778397, -118.112206, new ArrayList<Node>(),set);
+        Node d6 = new Node("sw of FO4", 33.778118, -118.112274, new ArrayList<Node>(),set);
+        Node d7 = new Node("right inner corner of fa4", 33.778170, -118.112587, new ArrayList<Node>(),set);
+        Node d8 = new Node("sw of FA3", 33.777556, -118.112774, new ArrayList<Node>(),set);
+        Node d9 = new Node("sw of FA2", 33.777452, -118.112814, new ArrayList<Node>(),set);
+        Node e1 = new Node("s of FA1", 33.777093, -118.112925, new ArrayList<Node>(),set);
+        Node e2 = new Node("west of theater", 33.776661, -118.112385, new ArrayList<Node>(),set);
+        Node e3 = new Node("e of FA1", 33.777196, -118.112004, new ArrayList<Node>(),set);
+        Node e4 = new Node("nw of ph2", 33.779627, -118.113245, new ArrayList<Node>(),set);
+        Node e5 = new Node("w of fo5", 33.779248, -118.113347, new ArrayList<Node>(),set);
+        Node e6 = new Node("nw of hsci", 33.780154, -118.113082, new ArrayList<Node>(),set);
+        Node e7 = new Node("nw of mlsc", 33.780568, -118.112938, new ArrayList<Node>(),set);
+        Node e8 = new Node("USU e entrance", 33.781293, -118.112982, new ArrayList<Node>(),set);
+        Node e9 = new Node("School Central", 33.782037, -118.112519, new ArrayList<Node>(),set);
+        Node f1 = new Node("North of USU", 33.782032, -118.113422, new ArrayList<Node>(),set);
+        Node f2 = new Node("SW of Kin Building", 33.782492, -118.113426, new ArrayList<Node>(),set);
+        Node f3 = new Node("W of Kin Building", 33.782946, -118.113560, new ArrayList<Node>(),set);
+        Node f4 = new Node("se of CBA", 33.783606, -118.115491, new ArrayList<Node>(),set);
+        Node f5 = new Node("ne of USU", 33.781626, -118.112603, new ArrayList<Node>(),set);
+        Node f6 = new Node("nw of usu", 33.782005, -118.114623, new ArrayList<Node>(),set);
+        Node f7 = new Node("north of lib", 33.777431, -118.114376, new ArrayList<Node>(),set);
 
-        Node g1 = new Node("west of SS/PA", 33.782016, -118.111542, new ArrayList<Node>());
-        Node g2 = new Node("west of outpost", 33.782377, -118.111273, new ArrayList<Node>());
-        Node g3 = new Node("w of vec", 33.782827, -118.111252, new ArrayList<Node>());
-        Node g4 = new Node("x in engineering quad", 33.783028, -118.111278, new ArrayList<Node>());
-        Node g5 = new Node("se of en2", 33.783073, -118.110527, new ArrayList<Node>());
-        Node g6 = new Node("square quad", 33.783193, -118.110419, new ArrayList<Node>());
-        Node g7 = new Node("nw of square quad", 33.783309, -118.110555, new ArrayList<Node>());
-        Node g8 = new Node("nw of en2", 33.783318, -118.111109, new ArrayList<Node>());
-        Node g9 = new Node("top left engineering area", 33.783359, -118.111432, new ArrayList<Node>());
+        Node g1 = new Node("west of SS/PA", 33.782016, -118.111542, new ArrayList<Node>(),set);
+        Node g2 = new Node("west of outpost", 33.782377, -118.111273, new ArrayList<Node>(),set);
+        Node g3 = new Node("w of vec", 33.782827, -118.111252, new ArrayList<Node>(),set);
+        Node g4 = new Node("x in engineering quad", 33.783028, -118.111278, new ArrayList<Node>(),set);
+        Node g5 = new Node("se of en2", 33.783073, -118.110527, new ArrayList<Node>(),set);
+        Node g6 = new Node("square quad", 33.783193, -118.110419, new ArrayList<Node>(),set);
+        Node g7 = new Node("nw of square quad", 33.783309, -118.110555, new ArrayList<Node>(),set);
+        Node g8 = new Node("nw of en2", 33.783318, -118.111109, new ArrayList<Node>(),set);
+        Node g9 = new Node("top left engineering area", 33.783359, -118.111432, new ArrayList<Node>(),set);
 
-        Node h1 = new Node("se of ecs", 33.783132, -118.110085, new ArrayList<Node>());
-        Node h2 = new Node("e of vec", 33.782818, -118.109990, new ArrayList<Node>());
-        Node h3 = new Node("se of vec", 33.782471, -118.110124, new ArrayList<Node>());
-        Node h4 = new Node("sw of hsd", 33.782372, -118.109893, new ArrayList<Node>());
-        Node h5 = new Node("w of desn", 33.782029, -118.109984, new ArrayList<Node>());
-        Node h6 = new Node("se of sspa", 33.781802, -118.110118, new ArrayList<Node>());
-        Node h7 = new Node("sw of sspa", 33.781811, -118.111084, new ArrayList<Node>());
-        Node h8 = new Node("n of fnd", 33.781343, -118.110574, new ArrayList<Node>());
+        Node h1 = new Node("se of ecs", 33.783132, -118.110085, new ArrayList<Node>(),set);
+        Node h2 = new Node("e of vec", 33.782818, -118.109990, new ArrayList<Node>(),set);
+        Node h3 = new Node("se of vec", 33.782471, -118.110124, new ArrayList<Node>(),set);
+        Node h4 = new Node("sw of hsd", 33.782372, -118.109893, new ArrayList<Node>(),set);
+        Node h5 = new Node("w of desn", 33.782029, -118.109984, new ArrayList<Node>(),set);
+        Node h6 = new Node("se of sspa", 33.781802, -118.110118, new ArrayList<Node>(),set);
+        Node h7 = new Node("sw of sspa", 33.781856, -118.111041, new ArrayList<Node>(),set);
+        Node h8 = new Node("n of fnd", 33.781343, -118.110574, new ArrayList<Node>(),set);
 
-        Node i1 = new Node("nw of en3", 33.783993, -118.111470, new ArrayList<Node>());
-        Node i2 = new Node("w of ten", 33.784503, -118.111526, new ArrayList<Node>());
-        Node i3 = new Node("se of baseball", 33.785581, -118.111520, new ArrayList<Node>());
-        Node i4 = new Node("ne of baseball", 33.786957, -118.111520, new ArrayList<Node>());
-        Node i5 = new Node("e of UMC", 33.787426, -118.111545, new ArrayList<Node>());
-        Node i6 = new Node("e of pyramid", 33.787462, -118.113362, new ArrayList<Node>());
-        Node i7 = new Node("se of pyramid", 33.786911, -118.113455, new ArrayList<Node>());
-        Node i8 = new Node("s of umc", 33.786967, -118.112469, new ArrayList<Node>());
-        Node i9 = new Node("s of pyramid", 33.786684, -118.114249, new ArrayList<Node>());
+        Node i1 = new Node("nw of en3", 33.783993, -118.111470, new ArrayList<Node>(),set);
+        Node i2 = new Node("w of ten", 33.784503, -118.111526, new ArrayList<Node>(),set);
+        Node i3 = new Node("se of baseball", 33.785581, -118.111520, new ArrayList<Node>(),set);
+        Node i4 = new Node("ne of baseball", 33.786957, -118.111520, new ArrayList<Node>(),set);
+        Node i5 = new Node("e of UMC", 33.787426, -118.111545, new ArrayList<Node>(),set);
+        Node i6 = new Node("e of pyramid", 33.787462, -118.113362, new ArrayList<Node>(),set);
+        Node i7 = new Node("se of pyramid", 33.786911, -118.113455, new ArrayList<Node>(),set);
+        Node i8 = new Node("s of umc", 33.786967, -118.112469, new ArrayList<Node>(),set);
+        Node i9 = new Node("s of pyramid", 33.786684, -118.114249, new ArrayList<Node>(),set);
 
-        Node j1 = new Node("e of park1", 33.785818, -118.115161, new ArrayList<Node>());
-        Node j2 = new Node("se of park1", 33.784591, -118.115185, new ArrayList<Node>());
-        Node j3 = new Node("csulb pickup zone", 33.781724, -118.114598, new ArrayList<Node>());
-        Node j4 = new Node("e of nugget", 33.780342, -118.113786, new ArrayList<Node>());
-        Node j5 = new Node("sw of bh", 33.782108, -118.115892, new ArrayList<Node>());
-        Node j6 = new Node("nw of ms", 33.783490, -118.109959, new ArrayList<Node>());
-        Node j7 = new Node("west of awkward pool", 33.781263, -118.114599, new ArrayList<Node>());
-        Node j8 = new Node("ne of library", 33.777391, -118.114189, new ArrayList<Node>());
-        Node j9 = new Node("ne of la3", 33.778269, -118.114108, new ArrayList<Node>());
+        Node j1 = new Node("e of park1", 33.785818, -118.115161, new ArrayList<Node>(),set);
+        Node j2 = new Node("se of park1", 33.784591, -118.115185, new ArrayList<Node>(),set);
+        Node j3 = new Node("csulb pickup zone", 33.781724, -118.114598, new ArrayList<Node>(),set);
+        Node j4 = new Node("e of nugget", 33.780342, -118.113786, new ArrayList<Node>(),set);
+        Node j5 = new Node("sw of bh", 33.782108, -118.115892, new ArrayList<Node>(),set);
+        Node j6 = new Node("nw of ms", 33.783490, -118.109959, new ArrayList<Node>(),set);
+        Node j7 = new Node("west of awkward pool", 33.781263, -118.114599, new ArrayList<Node>(),set);
+        Node j8 = new Node("ne of library", 33.777391, -118.114189, new ArrayList<Node>(),set);
+        Node j9 = new Node("ne of la3", 33.778269, -118.114108, new ArrayList<Node>(),set);
 
-        Node k1 = new Node("n of fcs", 33.782213, -118.116312, new ArrayList<Node>());
+        Node k1 = new Node("n of fcs", 33.782213, -118.116312, new ArrayList<Node>(),set);
+        Node k2 = new Node("between ecs and vec", 33.783170, -118.110244, new ArrayList<Node>(),set);
 
-        // = new Node("", , new ArrayList<Node>());
         //Adjacencies
 
         acs.setAdjacent(d4);
@@ -482,6 +489,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         ecs.setAdjacent(g6);        ecs.setAdjacent(h1);
         ecs.setAdjacent(h2);        ecs.setAdjacent(ten);
         ecs.setAdjacent(en4);        ecs.setAdjacent(rec);
+        ecs.setAdjacent(k2);
 
         en2.setAdjacent(g6);        en2.setAdjacent(g4);
         en2.setAdjacent(g8);
@@ -494,6 +502,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         et.setAdjacent(h1);        et.setAdjacent(h2);
         et.setAdjacent(hsd);        et.setAdjacent(ms);
+
 
         fa1.setAdjacent(d9);        fa1.setAdjacent(c1);
         fa1.setAdjacent(fa2);        fa1.setAdjacent(c9);
@@ -511,7 +520,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         fcs.setAdjacent(j3);        fcs.setAdjacent(sor);
         fcs.setAdjacent(j5);        fcs.setAdjacent(bh);
 
-        fnd.setAdjacent(h8);        fnd.setAdjacent(mlsc);
+        fnd.setAdjacent(h8);
 
         fo2.setAdjacent(lh);        fo2.setAdjacent(la5);
         fo2.setAdjacent(ph1);        fo2.setAdjacent(fo3);
@@ -576,10 +585,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         lh.setAdjacent(a9);        lh.setAdjacent(fo2);
         lh.setAdjacent(b9);        lh.setAdjacent(a6);
 
-        lib.setAdjacent(f7);
-
-        mlsc.setAdjacent(e6);        mlsc.setAdjacent(e7);
-        mlsc.setAdjacent(hsci);        mlsc.setAdjacent(fnd);
+        lib.setAdjacent(f7);        mlsc.setAdjacent(e6);
+        mlsc.setAdjacent(e7);        mlsc.setAdjacent(hsci);
 
         mhb.setAdjacent(d1);        mhb.setAdjacent(lab);
         mhb.setAdjacent(c9);
@@ -599,7 +606,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         ph1.setAdjacent(e5);        ph1.setAdjacent(d3);
         ph1.setAdjacent(c3);        ph1.setAdjacent(c4);
-        ph1.setAdjacent(fo5);
+        ph1.setAdjacent(fo5);        ph1.setAdjacent(fo4);
 
         ph2.setAdjacent(fo5);
 
@@ -625,9 +632,9 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         sor.setAdjacent(shs);
 
         sspa.setAdjacent(g1);        sspa.setAdjacent(outpost);
-        sspa.setAdjacent(h6);        sspa.setAdjacent(h7);
-        sspa.setAdjacent(h4);        sspa.setAdjacent(h3);
-        sspa.setAdjacent(h5);        sspa.setAdjacent(desn);
+        sspa.setAdjacent(h7);        sspa.setAdjacent(h4);
+        sspa.setAdjacent(h3);        sspa.setAdjacent(h5);
+        sspa.setAdjacent(desn);
 
         sor.setAdjacent(fcs);        sor.setAdjacent(j5);
 
@@ -648,7 +655,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         usu.setAdjacent(e8);        usu.setAdjacent(e9);
         usu.setAdjacent(cafe);        usu.setAdjacent(f5);
         usu.setAdjacent(f6);        usu.setAdjacent(j3);
-        usu.setAdjacent(j4);
+        usu.setAdjacent(j4);        usu.setAdjacent(h7);
 
         ut.setAdjacent(lab);        ut.setAdjacent(utc);
         ut.setAdjacent(fa1);        ut.setAdjacent(ta);
@@ -658,6 +665,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         vec.setAdjacent(g6);        vec.setAdjacent(g3);
         vec.setAdjacent(g5);        vec.setAdjacent(h2);
         vec.setAdjacent(h3);        vec.setAdjacent(outpost);
+        vec.setAdjacent(k2);
+
 
         a1.setAdjacent(a2);        a1.setAdjacent(a4);
         a1.setAdjacent(lib);
@@ -700,6 +709,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         b1.setAdjacent(fo3);        b1.setAdjacent(fo2);
         b1.setAdjacent(la4);
 
+//      b2
+
         b3.setAdjacent(b1);        b3.setAdjacent(b4);
         b3.setAdjacent(la5);        b3.setAdjacent(fo3);
 
@@ -731,9 +742,14 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         c1.setAdjacent(fa1);        c1.setAdjacent(fa2);
         c1.setAdjacent(fa3);
 
+//      c2
+
         c3.setAdjacent(c6);        c3.setAdjacent(ph1);
         c3.setAdjacent(pp);        c3.setAdjacent(d3);
         c3.setAdjacent(d5);
+
+//      c4
+//      c5
 
         c6.setAdjacent(c1);        c6.setAdjacent(b9);
         c6.setAdjacent(d3);        c6.setAdjacent(c3);
@@ -816,10 +832,12 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         e8.setAdjacent(e7);        e8.setAdjacent(usu);
         e8.setAdjacent(e9);        e8.setAdjacent(f5);
+        e8.setAdjacent(h7);
 
         e9.setAdjacent(e7);        e9.setAdjacent(e8);
         e9.setAdjacent(f1);        e9.setAdjacent(f5);
         e9.setAdjacent(kin);        e9.setAdjacent(g1);
+        e9.setAdjacent(h7);
 
         f1.setAdjacent(e9);        f1.setAdjacent(usu);
         f1.setAdjacent(f2);        f1.setAdjacent(kin);
@@ -891,13 +909,11 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         h6.setAdjacent(h5);        h6.setAdjacent(sspa);
         h6.setAdjacent(desn);        h6.setAdjacent(h7);
-        h6.setAdjacent(h8);
 
         h7.setAdjacent(h6);        h7.setAdjacent(sspa);
-        h7.setAdjacent(g1);        h7.setAdjacent(h8);
+        h7.setAdjacent(g1);        h7.setAdjacent(e8);
+        h7.setAdjacent(e9);
 
-        h8.setAdjacent(h7);        h8.setAdjacent(h6);
-        h8.setAdjacent(fnd);        h8.setAdjacent(mlsc);
 
         i1.setAdjacent(g9);        i1.setAdjacent(ten);
         i1.setAdjacent(i2);
@@ -953,6 +969,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         j9.setAdjacent(a9);        j9.setAdjacent(la3);
         j9.setAdjacent(a6);
+
+        k2.setAdjacent(vec);        k2.setAdjacent(ecs);
 
         //UPPER CAMPUS
         //USU
@@ -1135,6 +1153,15 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         //BH
         mapPlaces.put("Brotman Hall", bh);
         mapPlaces.put("BH", bh);
-    }
 
+//      default at ECS
+        currentLoc = new Node("User",33.783529, -118.110287,new ArrayList<Node>(),new LocationSet());
+
+        ArrayList<Node> z = set.getList();
+        for(Node x : z) {
+            currentLoc.setAdjacent(x);
+            x.setAdjacent(currentLoc);
+        }
+
+    }
 }
