@@ -1,12 +1,15 @@
 package com.project.beachnav.beachnav.activity;
 
+import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,13 +49,13 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     private Marker searched_location;
     private Marker user_location;
 
-    private Node currentLoc = null;
+    protected Node currentLoc = null;
     private Node searchedLoc = null;
     private ArrayList<Node> path;
     private PathHandler pathHandler;
-    private Location myLocation;
+    protected Location myLocation;
 
-    private UserLocation userLocation;
+    protected UserLocation userLocation;
     double userLat, userLong;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,16 +76,22 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         location_tf.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event){
-                if ((event.getAction()==KeyEvent.ACTION_DOWN)
-                        && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    onSearch(v); return true;
+                if ( (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    onSearch(v); hideSoftKeyboard();
+                    return true; //drops soft keyboard after search is done
                 } return false;
             }   });
         location_tf.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
-                location_tf.setText("");
-            }   });
+                /* location_tf.setText("");  */
+            }
+        }); // for posterity
+        location_tf.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                location_tf.setText(""); return true;
+            }
+        });
 
         Button routeButton = findViewById(R.id.route);
         routeButton.setOnClickListener(new View.OnClickListener() {
@@ -91,12 +100,24 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 onRoute();
             }
         });
+        routeButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                location_tf.setError("Route from your location to the location you searched"); return true;
+            }
+        });
 
         Button currentLocButton = findViewById(location);
         currentLocButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 findCurrentLocation();
+            }
+        });
+        currentLocButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                location_tf.setError("Press to lock on to your location"); return true;
             }
         });
     }
@@ -120,6 +141,11 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //            default: return super.onOptionsItemSelected(item);
 //        }
 //    }
+//  drops down keyboard when pressed
+    private void hideSoftKeyboard() {
+        InputMethodManager in = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        in.hideSoftInputFromWindow(location_tf.getWindowToken(),0);
+    }
 
     /**
      * Will find a location that matches the search item as best as possible.
@@ -127,7 +153,6 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
      * ..we need to be able to handle anything that the search dialog can give
      *  -> auto-suggestions from a database?
      */
-
 
     public void onSearch(View v) {
 //  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
@@ -139,7 +164,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         String location = location_tf.getText().toString(); // takes string in textbox
 
-        if (location == null || location.equals("")) { //handles empty string
+        if (location.equals("")) { //handles empty string
             location_tf.setError("Can't search nothing. Try searching a location.");
         } else {
             try { //mapPlaces finds key:location and returns a Node containing location info
@@ -172,7 +197,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             location_tf.setError("We need your location and the location you want to go to.");
             e.printStackTrace();
         }
-    } //only navigates while user's currentlocation is within CSULB_bounds (endgame)
+    } //only navigates while user's currentLocation is within CSULB_bounds (endgame)
 
 
 
@@ -192,7 +217,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         LatLng latLng = new LatLng(userLat,userLong);
         user_location = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
 
@@ -219,7 +244,10 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016_edited))
                 .position(CSULB, 1552f, 1560f);
         mMap.addGroundOverlay(csulbMap);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(CSULB));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(CSULB));
+
+        Toast.makeText(this, "Press and hold buttons for more information", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Press and hold search box to clear entry", Toast.LENGTH_SHORT).show();
 
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,

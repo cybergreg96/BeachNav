@@ -22,11 +22,13 @@ public class UserLocation extends Service implements LocationListener {
     boolean canGetLocation = false;
     Location location;
     protected LocationManager locationManager;
-    public UserLocation(Context context){
+
+    public UserLocation(Context context) {
         this.context = context;
     }
+
     //get location
-    public Location getLocation(){
+    public Location getLocation() {
         try{
             locationManager = (LocationManager)context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(locationManager.GPS_PROVIDER);
@@ -60,7 +62,7 @@ public class UserLocation extends Service implements LocationListener {
     }
     //default methods if LocationListener is imported
     public void onLocationChanged(Location location){
-
+//        getLocation();
     }
     public void onStatusChanged(String provider, int status, Bundle extras){
 
