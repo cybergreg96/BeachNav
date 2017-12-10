@@ -45,13 +45,13 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     private Map<String, Node> mapPlaces = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private EditText location_tf;
 
-    private Marker searched_location,  user_location;
+    private Marker searched_location, user_location;
 
     private Node currentLoc = null;
     private Node searchedLoc = null;
     private ArrayList<Node> path;
     private PathHandler pathHandler;
-    private Location myLocation;
+    protected Location myLocation;
 
     private UserLocation userLocation;
     double userLat, userLong;
@@ -141,13 +141,12 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         String location = location_tf.getText().toString(); // takes string in textbox
 
-        if (location == null || location.equals("")) { //handles empty string
+        if (location.equals("")) { //handles empty string
             location_tf.setError("Can't search nothing. Try searching a location.");
         } else {
             try { //mapPlaces finds key:location and returns a Node containing location info
                 searchedLoc = mapPlaces.get(location);
-                LatLng latLng = new LatLng(searchedLoc.getY(),searchedLoc.getX());
-                System.out.println("Latitude: "+searchedLoc.getY()+" Longitude: "+searchedLoc.getX());
+                LatLng latLng = new LatLng(searchedLoc.getY(),searchedLoc.getX()); //swap x and y
                 if (searched_location != null) { searched_location.setPosition(latLng);
                     searched_location.setTitle(searchedLoc.getLabel());
                 } else
@@ -162,7 +161,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     public void onRoute() {
 //        Toast.makeText(this, "A route goes from where you are to where you want to go", Toast.LENGTH_SHORT).show();
 
-        Node currentLoc = mapPlaces.get("ECS");
+//        Node currentLoc = mapPlaces.get("ECS");
         // placeholder, user's currentLocation will replace this
         // as a matter of fact, maybe we can move 'current' to findCurrentLocation()
 
@@ -225,7 +224,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         sett.setZoomControlsEnabled(false);
         sett.setScrollGesturesEnabled(true);
         mMap.setMinZoomPreference(15.0f);
-//        mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
+        mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
         LatLng CSULB = new LatLng(33.7819, -118.1162);
         GroundOverlayOptions csulbMap = new GroundOverlayOptions()
                 .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016_edited))
@@ -364,7 +363,6 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         Node jg = new Node("Japanese Garden", 33.785021, -118.119393, new ArrayList<Node>(),set);
         Node hill = new Node("Hillside", 33.782335, -118.118658, new ArrayList<Node>(),set);
 
-        // = new Node("", , new ArrayList<Node>());
         //Intermediate Nodes
         Node a1 = new Node("sw of LA1", 33.777617, -118.115114, new ArrayList<Node>(),set);
         Node a2 = new Node("se of LA1", 33.777447, -118.114372, new ArrayList<Node>(),set);
@@ -1168,8 +1166,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         ArrayList<Node> z = set.getList();
         for(Node x : z) {
-            currentLoc.setAdjacent(x);
-            x.setAdjacent(currentLoc);
+            currentLoc.setAdjacent(x);    // user's location is adjacent to everything
+//            x.setAdjacent(currentLoc);  // but not everything is adjacent to the user's location
         }
 
     }
