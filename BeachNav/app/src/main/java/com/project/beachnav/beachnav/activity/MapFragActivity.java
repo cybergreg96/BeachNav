@@ -7,6 +7,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -69,7 +70,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //        }
 
         initializePathOverlay(); //currentLoc is instantiated here
-
+        userLocation = new UserLocation(getApplicationContext());
         location_tf = findViewById(R.id.editText);
         location_tf.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -145,8 +146,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         } else {
             try { //mapPlaces finds key:location and returns a Node containing location info
                 searchedLoc = mapPlaces.get(location);
-                LatLng latLng = new LatLng(searchedLoc.getX(),searchedLoc.getY());
-//              System.out.println("Latitude: "+searchedLoc.getY()+" Longitude: "+searchedLoc.getX());
+                LatLng latLng = new LatLng(searchedLoc.getY(),searchedLoc.getX());
+                System.out.println("Latitude: "+searchedLoc.getY()+" Longitude: "+searchedLoc.getX());
                 if (searched_location != null) { searched_location.setPosition(latLng);
                     searched_location.setTitle(searchedLoc.getLabel());
                 } else
@@ -184,18 +185,26 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     public void findCurrentLocation() {
         //user location
 //        if (user_location != null) {user_location.remove();}
-
-        userLocation = new UserLocation(getApplicationContext());
+        int attempt = 0;
         myLocation = userLocation.getLocation(); //get location coordinates
-        userLat = myLocation.getLatitude();
-        userLong = myLocation.getLongitude();
+        if(myLocation != null) {
+            userLat = myLocation.getLatitude();
+            userLong = myLocation.getLongitude();
 
-        currentLoc.setCoordinates(userLat, userLong); //updates currentLoc coordinates
+            currentLoc.setCoordinates(userLat, userLong); //updates currentLoc coordinates
 
-        LatLng latLng = new LatLng(userLat,userLong); //updates currentLoc marker (user_location)
-        if (user_location != null) user_location.setPosition(latLng);
-        else
-            user_location = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
+            LatLng latLng = new LatLng(userLat, userLong); //updates currentLoc marker (user_location)
+            if (user_location != null) user_location.setPosition(latLng);
+            else
+                user_location = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
+        }else{
+            attempt++;
+            if(attempt >= 1) {
+                Toast.makeText(this, "Loading User Location", Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(this, "Please Enable Location Services", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 
