@@ -164,7 +164,10 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //        Node currentLoc = mapPlaces.get("ECS");
         // placeholder, user's currentLocation will replace this
         // as a matter of fact, maybe we can move 'current' to findCurrentLocation()
-
+        if(myLocation != null)
+            currentLoc.setCoordinates(myLocation.getLatitude(),myLocation.getLongitude());
+        else
+            Toast.makeText(this, "Please Enable Location Services, defaulting to ECS", Toast.LENGTH_LONG).show();
         if (path != null) {
             path = null; //and then un-draw the path (with removePath()), and leave the marker
             pathHandler.clearPath();
