@@ -77,10 +77,9 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event){
                 if ( (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    onSearch(v); hideSoftKeyboard();
-                    return true; //drops soft keyboard after search is done
+                    onSearch(v); hideSoftKeyboard(); return true;
                 } return false;
-            }   });
+            }   }); //drops soft keyboard after search is done
         location_tf.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 /* location_tf.setText("");  */
@@ -91,7 +90,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             public boolean onLongClick(View v) {
                 location_tf.setText(""); return true;
             }
-        });
+        }); // clears search entry when long pressing search bar
 
         Button routeButton = findViewById(R.id.route);
         routeButton.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +104,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             public boolean onLongClick(View v) {
                 location_tf.setError("Route from your location to the location you searched"); return true;
             }
-        });
+        }); // shows information for route button
 
         Button currentLocButton = findViewById(location);
         currentLocButton.setOnClickListener(new View.OnClickListener() {
@@ -119,7 +118,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             public boolean onLongClick(View view) {
                 location_tf.setError("Press to lock on to your location"); return true;
             }
-        });
+        }); // shows information for location button
     }
 
 //    @Override
@@ -141,7 +140,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //            default: return super.onOptionsItemSelected(item);
 //        }
 //    }
-//  drops down keyboard when pressed
+
+//  drops down soft keyboard when pressed
     private void hideSoftKeyboard() {
         InputMethodManager in = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         in.hideSoftInputFromWindow(location_tf.getWindowToken(),0);
@@ -197,11 +197,9 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             location_tf.setError("We need your location and the location you want to go to.");
             e.printStackTrace();
         }
-    } //only navigates while user's currentLocation is within CSULB_bounds (endgame)
+    } // only navigates while user's currentLocation is within CSULB_bounds (endgame)
 
-
-
-    //event handler for location button, finds current location using UserLocation
+    // event handler for location button, finds current location using UserLocation
     public void findCurrentLocation() {
         //user location
         if (user_location != null) {user_location.remove();}
@@ -239,10 +237,10 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         sett.setScrollGesturesEnabled(true);
         mMap.setMinZoomPreference(15.0f);
         mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
-        LatLng CSULB = new LatLng(33.7819, -118.1162);
+        LatLng CSULB = new LatLng(33.781932, -118.11535);
         GroundOverlayOptions csulbMap = new GroundOverlayOptions()
-                .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016_edited))
-                .position(CSULB, 1552f, 1560f);
+                .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016_edited_b))
+                .position(CSULB, 1570f, 1582f);
         mMap.addGroundOverlay(csulbMap);
         mMap.animateCamera(CameraUpdateFactory.newLatLng(CSULB));
 
