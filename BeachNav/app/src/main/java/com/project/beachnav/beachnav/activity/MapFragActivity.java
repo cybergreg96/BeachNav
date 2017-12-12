@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -53,9 +54,9 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     private Node searchedLoc = null;
     private ArrayList<Node> path;
     private PathHandler pathHandler;
-    protected Location myLocation;
+    private Location myLocation;
 
-    protected UserLocation userLocation;
+    private UserLocation userLocation;
     double userLat, userLong;
 
     @Override
@@ -211,12 +212,13 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     // event handler for location button, finds current location using UserLocation
     public void findCurrentLocation() {
         //user location
-
+        userLocation = new UserLocation(getApplicationContext());
         int attempt = 0;
         myLocation = userLocation.getLocation(); //get location coordinates
         if (myLocation != null) {
             userLat = myLocation.getLatitude();
             userLong = myLocation.getLongitude();
+            Log.i("findCurrentLocation", "userLat: " + userLat + ", userLong: " + userLong);
 
             currentLoc.setCoordinates(userLat, userLong); //updates currentLoc coordinates
 
