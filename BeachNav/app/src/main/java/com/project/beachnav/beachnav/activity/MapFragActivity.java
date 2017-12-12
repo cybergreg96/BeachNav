@@ -78,7 +78,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event){
                 if ( (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    onSearch(v); hideSoftKeyboard(); return true;
+                    onSearch(v); hideSoftKeyboard(); return true; //drops pin on searched location
                 } return false;
             }   }); //drops soft keyboard after search is done
         location_tf.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +97,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         routeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRoute();
+                onSearch(v); onRoute(); //drops pin on searched location, then routes there
             }
         });
         routeButton.setOnLongClickListener(new View.OnLongClickListener() {
@@ -163,8 +163,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             pathHandler.clearPath();
         }
 
-        String location = location_tf.getText().toString(); // takes string in textbox
-
+        String location = location_tf.getText().toString().trim(); // takes string in textbox
+                                                                //trim() allows use of autocomplete
         if (location.equals("")) { //handles empty string
             location_tf.setError("Can't search nothing. Try searching a location.");
         } else {
@@ -187,7 +187,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
 //        Node currentLoc = mapPlaces.get("ECS");
         // placeholder, user's currentLocation will replace this
-        // as a matter of fact, maybe we can move 'current' to findCurrentLocation()
+
         if(myLocation != null)
             currentLoc.setCoordinates(myLocation.getLatitude(),myLocation.getLongitude());
         else
@@ -227,10 +227,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 Toast.makeText(this, "Loading User Location", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(this, "Please Enable Location Services", Toast.LENGTH_LONG).show();
-            }
-        }
+        }   }
     }
-
 
     /**
      * Manipulates the map once available.
@@ -253,14 +251,14 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         LatLng CSULB = new LatLng(33.781932, -118.11535);
         GroundOverlayOptions csulbMap = new GroundOverlayOptions()
                 .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016_edited_b))
-                .position(CSULB, 1570f, 1582f);
+                .position(CSULB, 1570f, 1582f); //add overlay
         mMap.addGroundOverlay(csulbMap);
         mMap.animateCamera(CameraUpdateFactory.newLatLng(CSULB));
 
         Toast.makeText(this, "Press and hold buttons for more information", Toast.LENGTH_SHORT).show();
         Toast.makeText(this, "Press and hold search box to clear entry", Toast.LENGTH_SHORT).show();
 
-//        findCurrentLocation(); //after instantiation with initializePathOverlay(), this updates it
+        findCurrentLocation(); //after instantiation with initializePathOverlay(), this updates it
 
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,

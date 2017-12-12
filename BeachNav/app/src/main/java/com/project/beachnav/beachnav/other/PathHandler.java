@@ -1,10 +1,13 @@
 package com.project.beachnav.beachnav.other;
+
 import android.graphics.Color;
 import android.location.Location;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -27,12 +30,11 @@ public class PathHandler {
         gmap = mMap;
     }
     public void show() {
-        lineToDraw.color(Color.parseColor("#CC0000FF"));
         lineToDraw.width(5);
         lineToDraw.visible(true);
-
     }
     public void genVisualPath(){
+        lineToDraw.color(Color.CYAN);
         Node[] nodeArr = new Node[spath.size()];
         int w = 0;
         for (Node n : spath) {
