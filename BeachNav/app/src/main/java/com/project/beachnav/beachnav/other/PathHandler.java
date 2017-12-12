@@ -41,8 +41,8 @@ public class PathHandler {
         }
         for (int i = 0; i < nodeArr.length; i++) { //Iterates through nodeArr to create Location ArrayList
             Location toAdd = new Location(""); //Provider is unnecessary for this method
-            toAdd.setLatitude(nodeArr[i].getX()); //uses Node x value for latitude
-            toAdd.setLongitude(nodeArr[i].getY()); //uses Node y value for longitude
+            toAdd.setLatitude(nodeArr[i].getY()); //uses Node x value for latitude
+            toAdd.setLongitude(nodeArr[i].getX()); //uses Node y value for longitude
             drawnLocs.add(toAdd);
         }
         for (Location drawn : drawnLocs) { //Draws through LatLng objects created from location arrlist
