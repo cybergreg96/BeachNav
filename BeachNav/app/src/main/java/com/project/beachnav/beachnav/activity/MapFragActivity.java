@@ -211,7 +211,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
         int attempt = 0;
         myLocation = userLocation.getLocation(); //get location coordinates
-        if(myLocation != null) {
+        if (myLocation != null) {
             userLat = myLocation.getLatitude();
             userLong = myLocation.getLongitude();
 
@@ -221,15 +221,15 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             if (user_location != null) user_location.setPosition(latLng);
             else
                 user_location = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
-        }else{
+        } else {
             attempt++;
-            if(attempt >= 1) {
+            if (attempt >= 1) {
                 Toast.makeText(this, "Loading User Location", Toast.LENGTH_LONG).show();
-            }else{
+            } else {
                 Toast.makeText(this, "Please Enable Location Services", Toast.LENGTH_LONG).show();
             }
         }
-
+    }
 
 
     /**
