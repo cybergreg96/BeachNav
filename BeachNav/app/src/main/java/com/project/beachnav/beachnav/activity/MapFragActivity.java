@@ -223,7 +223,10 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             LatLng latLng = new LatLng(userLat, userLong); //updates currentLoc marker (user_location)
             if (user_location != null) user_location.setPosition(latLng);
             else
-                user_location = mMap.addMarker(new MarkerOptions().position(latLng).title("You are Here"));
+                user_location = mMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title("You are Here")
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.target_location)));
         } else {
             attempt++;
             if (attempt >= 1) {
