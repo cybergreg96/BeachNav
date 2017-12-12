@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
@@ -16,14 +17,17 @@
         android:hint="@string/search_hint"
         android:imeOptions="actionSearch"
         android:inputType="text"
+        android:maxLines="1"
         android:onClick="onClick"
-        android:paddingBottom="12dp"
+        android:paddingBottom="11dp"
         android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:paddingTop="12dp"
         android:textColor="@color/colorAccent"
         android:textColorHint="@color/colorAccent"
-        android:translationY="1dp"
-        android:visibility="visible" />
+        android:translationY="2dp"
+        android:visibility="visible"
+        android:longClickable="true"/>
 
     <Button
         android:id="@+id/route"
@@ -33,7 +37,8 @@
         android:backgroundTint="@color/colorPrimary"
         android:drawableStart="@android:drawable/ic_menu_directions"
         android:onClick="onClick"
-        android:translationX="1dp" />
+        android:translationX="1dp"
+        android:longClickable="true" />
     <!--the routing method goes here-->
 
     <Button
@@ -43,7 +48,8 @@
         android:onClick="onClick"
         android:layout_weight="0.5"
         android:backgroundTint="@color/colorPrimary"
-        android:drawableStart="@android:drawable/ic_menu_mylocation" />
+        android:drawableStart="@android:drawable/ic_menu_mylocation"
+        android:longClickable="true" />
     <!--android:onClick="findLocation" -->
 
 </LinearLayout>
