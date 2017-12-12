@@ -51,8 +51,8 @@ public class Node {
     public Node(String name, double x, double y, ArrayList<Node> nextList, LocationSet z)
     {
         label = name;
-        lng = x;
-        lat = y;
+        lat = x;
+        lng = y;
         adjacent = nextList;
         z.add(this);
     }
@@ -142,10 +142,10 @@ public class Node {
     }
 
     public void setX(double x) {
-        lng = x;
+        lat = x;
     }
     public void setY(double y) {
-        lat = y;
+        lng = y;
     }
     public double getX() {
         return lat;

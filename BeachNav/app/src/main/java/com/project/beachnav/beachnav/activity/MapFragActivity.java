@@ -72,7 +72,10 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //        }
 
         initializePathOverlay(); //currentLoc is instantiated here
-        userLocation = new UserLocation(getApplicationContext());
+
+        userLocation = new UserLocation(getApplicationContext()); //user location checker is here
+
+//      ui based instantiation
         location_tf = findViewById(R.id.editText);
         location_tf.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -80,12 +83,11 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 if ( (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     onSearch(v); hideSoftKeyboard(); return true; //drops pin on searched location
                 } return false;
-            }   }); //drops soft keyboard after search is done
-        location_tf.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                /* location_tf.setText("");  */
             }
-        }); // for posterity
+        }); //drops soft keyboard after search is done
+        location_tf.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {            }
+        }); // so it doesn't crash
         location_tf.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -97,9 +99,10 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         routeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSearch(v); onRoute(); //drops pin on searched location, then routes there
+                onSearch(v); onRoute();
             }
         });
+        //drops pin on searched location, then routes there
         routeButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -110,13 +113,13 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         Button currentLocButton = findViewById(location);
         currentLocButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 findCurrentLocation();
             }
         });
         currentLocButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public boolean onLongClick(View v) {
                 location_tf.setError("Press to lock on to your location"); return true;
             }
         }); // shows information for location button
@@ -170,7 +173,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         } else {
             try { //mapPlaces finds key:location and returns a Node containing location info
                 searchedLoc = mapPlaces.get(location);
-                LatLng latLng = new LatLng(searchedLoc.getY(),searchedLoc.getX()); //swap x and y
+                LatLng latLng = new LatLng(searchedLoc.getX(),searchedLoc.getY());
                 if (searched_location != null) { searched_location.setPosition(latLng);
                     searched_location.setTitle(searchedLoc.getLabel());
                 } else
