@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="55dp"
-        android:text="setCurrent"
+        android:text="Set Current Location"
         android:backgroundTint="@color/colorPrimary"
         android:textColor="@color/colorAccent"
         android:onClick="onClick"

@@ -9,4 +9,5 @@
         android:id="@+id/BN.mapF"
         tools:context=".activity.MapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
 </FrameLayout>
