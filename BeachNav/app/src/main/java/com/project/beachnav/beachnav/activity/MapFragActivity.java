@@ -46,7 +46,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
     private Map<String, Node> mapPlaces = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private EditText location_tf;
-
+    private int attempt = 0;
     private Marker searched_location, user_location;
 
     protected Node currentLoc = null;
@@ -54,7 +54,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     private ArrayList<Node> path;
     private PathHandler pathHandler;
     private Location myLocation;
-
+    private LatLng route = new LatLng(0,0);
     private UserLocation userLocation;
     double userLat, userLong;
 
@@ -153,7 +153,6 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 break;
         }
     }
-
 //  a copycat for onSearch(), but for setting the user's location
     public void changeCurrentLocation() {
         if (path != null) {
@@ -242,29 +241,35 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
 //        Node currentLoc = mapPlaces.get("ECS");
         // placeholder, user's currentLocation will replace this
-
-        if(myLocation != null)
-            currentLoc.setCoordinates(myLocation.getLatitude(), myLocation.getLongitude());
-         else
-            Toast.makeText(this, "Please Enable Location Services, defaulting to ECS", Toast.LENGTH_LONG).show();
-        if (path != null) {
-            path = null; //and then un-draw the path (with removePath()), and leave the marker
-            pathHandler.clearPath();
-        } try {
-            path = Node.getPath(currentLoc, searchedLoc);
-            pathHandler = new PathHandler(path, mMap);
-            pathHandler.genVisualPath();  pathHandler.show();
-        } catch(Exception e) {
-            location_tf.setError("We need your location and the location you want to go to.");
-            e.printStackTrace();
+        findCurrentLocation();
+        if(route.latitude<=33.788763 && route.longitude>=-118.122509 && route.latitude>=33.775236 && route.longitude<=-118.108002) {
+            if (myLocation != null)
+                currentLoc.setCoordinates(myLocation.getLatitude(), myLocation.getLongitude());
+            else
+                Toast.makeText(this, "Please Enable Location Services, defaulting to ECS", Toast.LENGTH_LONG).show();
+            if (path != null) {
+                path = null; //and then un-draw the path (with removePath()), and leave the marker
+                pathHandler.clearPath();
+            }
+            try {
+                path = Node.getPath(currentLoc, searchedLoc);
+                pathHandler = new PathHandler(path, mMap);
+                pathHandler.genVisualPath();
+                pathHandler.show();
+            } catch (Exception e) {
+                location_tf.setError("We need your location and the location you want to go to.");
+                e.printStackTrace();
+            }
+        }else{
+            Toast.makeText(this, "Get on campus to route", Toast.LENGTH_LONG).show();
         }
     } // only navigates while user's currentLocation is within CSULB_bounds (endgame)
 
     // event handler for location button, finds current location using UserLocation
     public void findCurrentLocation() {
         //user location
-        userLocation = new UserLocation(getApplicationContext());
-        int attempt = 0;
+       // userLocation = new UserLocation(getApplicationContext());
+
         myLocation = userLocation.getLocation(); //get location coordinates
         if (myLocation != null) {
             userLat = myLocation.getLatitude();
@@ -274,18 +279,20 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             currentLoc.setCoordinates(userLat, userLong); //updates currentLoc coordinates
 
             LatLng latLng = new LatLng(userLat, userLong); //updates currentLoc marker (user_location)
+            route = new LatLng(userLat, userLong);
             if (user_location != null) user_location.setPosition(latLng);
             else
                 user_location = mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title("You are Here")
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.target_location)));
-        } else {
+        attempt = 0;} else {
             attempt++;
-            if (attempt >= 1) {
+            if (attempt == 1) {
                 Toast.makeText(this, "Loading User Location", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(this, "Please Enable Location Services", Toast.LENGTH_LONG).show();
+
         }   }
     }
 
@@ -334,6 +341,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     }
     @Override
     protected void onResume() {
+
         super.onResume();
     }
 
@@ -748,6 +756,18 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         usu.setAdjacent(cafe);        usu.setAdjacent(f5);
         usu.setAdjacent(f6);        usu.setAdjacent(j3);
         usu.setAdjacent(j4);        usu.setAdjacent(h7);
+
+        cp.setAdjacent(e6);        cp.setAdjacent(b8);
+        cp.setAdjacent(e8);        cp.setAdjacent(e9);
+        cp.setAdjacent(cafe);        cp.setAdjacent(f5);
+        cp.setAdjacent(f6);        cp.setAdjacent(j3);
+        cp.setAdjacent(j4);        cp.setAdjacent(h7);
+
+        e6.setAdjacent(cp);        b8.setAdjacent(cp);
+        e8.setAdjacent(cp);        e9.setAdjacent(cp);
+        cafe.setAdjacent(cp);        f5.setAdjacent(cp);
+        f6.setAdjacent(cp);        j3.setAdjacent(cp);
+        j4.setAdjacent(cp);        h7.setAdjacent(cp);
 
         ut.setAdjacent(lab);        ut.setAdjacent(utc);
         ut.setAdjacent(fa1);        ut.setAdjacent(ta);
