@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -32,8 +33,6 @@ import com.project.beachnav.beachnav.other.UserLocation;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
-
-import static com.project.beachnav.beachnav.R.id.location;
 
 /**
  * Created 10/25/2017.
@@ -111,7 +110,7 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             }
         }); // shows information for route button
 
-        Button currentLocButton = findViewById(location);
+        Button currentLocButton = findViewById(R.id.location);
         currentLocButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +123,58 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 location_tf.setError("Press to lock on to your location"); return true;
             }
         }); // shows information for location button
+
+//        DEV MODE ONLY, COMMENT OUT FOR RELEASE
+        CheckBox disabledModeCheckbox = findViewById(R.id.handicapMode);
+        disabledModeCheckbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCheckboxClicked(v);
+            }
+        });
+
+        Button setCurrentLocation = findViewById(R.id.setCurrentLoc);
+        setCurrentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCurrentLocation();
+            }
+        });
+    }
+
+//  responds to check boxes and changes things on the view as necessary
+    public void onCheckboxClicked(View v) {
+        boolean checked = ((CheckBox) v).isChecked();
+
+        switch(v.getId()) {
+            case R.id.handicapMode:
+                if(checked) {} // refer routing algorithm to alternate node map
+                else {} // have routing algorithm refer to normal node map
+                break;
+        }
+    }
+
+//  a copycat for onSearch(), but for setting the user's location
+    public void changeCurrentLocation() {
+        if (path != null) {
+            path = null; //and then un-draw the path (with removePath()), and leave the marker
+            pathHandler.clearPath();
+        }
+        String current = location_tf.getText().toString().trim();
+        if (current.equals("")) { //handles empty string
+            location_tf.setError("Can't search nothing. Try searching a location.");
+        } else {
+            try { //mapPlaces finds key:location and returns a Node containing location info
+                currentLoc = mapPlaces.get(current);
+                LatLng latLng = new LatLng(currentLoc.getX(),currentLoc.getY());
+                if (user_location != null) { user_location.setPosition(latLng);
+                    user_location.setTitle(currentLoc.getLabel());
+                } else
+                    user_location = mMap.addMarker(new MarkerOptions().position(latLng).title(currentLoc.getLabel()));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            } catch (Exception e) {
+                location_tf.setError("Location not found. Try another location.");
+            }   }
     }
 
 //    @Override
@@ -193,8 +244,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         // placeholder, user's currentLocation will replace this
 
         if(myLocation != null)
-            currentLoc.setCoordinates(myLocation.getLatitude(),myLocation.getLongitude());
-        else
+            currentLoc.setCoordinates(myLocation.getLatitude(), myLocation.getLongitude());
+         else
             Toast.makeText(this, "Please Enable Location Services, defaulting to ECS", Toast.LENGTH_LONG).show();
         if (path != null) {
             path = null; //and then un-draw the path (with removePath()), and leave the marker

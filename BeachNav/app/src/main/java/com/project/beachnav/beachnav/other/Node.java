@@ -138,7 +138,7 @@ public class Node {
     }
 
     public void setCoordinates(double x, double y) {
-        lng = x; lat = y;
+        lat = x; lng = y;
     }
 
     public void setX(double x) {
