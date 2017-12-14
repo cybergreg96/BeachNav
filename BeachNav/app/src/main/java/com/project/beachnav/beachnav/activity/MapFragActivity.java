@@ -19,6 +19,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -41,16 +42,21 @@ import java.util.TreeMap;
 public class MapFragActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private LatLngBounds CSULB_Bounds =
-            new LatLngBounds(new LatLng(33.765, -118.124241), new LatLng(33.785, -118.108));
+
+    private final LatLngBounds CSULB_Bounds =
+            new LatLngBounds(new LatLng(33.775, -118.124241), new LatLng(33.789, -118.108));
+    private final LatLng CSULB = new LatLng(33.781932, -118.11535);
+    private GroundOverlay csulbOverlay;
 
     private Map<String, Node> mapPlaces = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private EditText location_tf;
-    private int attempt = 0;
-    private Marker searched_location, user_location;
+    private Marker
+            searched_location = null,
+            user_location = null;
 
     protected Node currentLoc = null;
     private Node searchedLoc = null;
+
     private ArrayList<Node> path;
     private PathHandler pathHandler;
     private Location myLocation;
@@ -99,7 +105,8 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         routeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSearch(v); onRoute();
+//                onSearch(v);
+                onRoute();
             }
         });
         //drops pin on searched location, then routes there
@@ -124,6 +131,20 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             }
         }); // shows information for location button
 
+        Button setCurrentLocation = findViewById(R.id.setCurrentLoc);
+        setCurrentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCurrentLocation();
+            }
+        });
+        setCurrentLocation.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View v) {
+                location_tf.setError("Press to set search entry as the 'user' location. If there is no search entry when this is pressed, and there is a searched location marker, already, then this location will become the 'user' location"); return true;
+            }
+        });
+
 //        DEV MODE ONLY, COMMENT OUT FOR RELEASE
         CheckBox disabledModeCheckbox = findViewById(R.id.handicapMode);
         disabledModeCheckbox.setOnClickListener(new View.OnClickListener() {
@@ -133,13 +154,16 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
-        Button setCurrentLocation = findViewById(R.id.setCurrentLoc);
-        setCurrentLocation.setOnClickListener(new View.OnClickListener() {
+        CheckBox overlayToggleCheckbox = findViewById(R.id.overlayToggle);
+        overlayToggleCheckbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeCurrentLocation();
+                onCheckboxClicked(v);
             }
         });
+        overlayToggleCheckbox.setChecked(true); //set toggle to on, as overlay is there at start
+
+        Log.i("MapFragActivity", "all buttons and checkboxes added");
     }
 
 //  responds to check boxes and changes things on the view as necessary
@@ -147,33 +171,21 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         boolean checked = ((CheckBox) v).isChecked();
 
         switch(v.getId()) {
-            case R.id.handicapMode:
-                if(checked) {} // refer routing algorithm to alternate node map
-                else {} // have routing algorithm refer to normal node map
-                break;
+            case R.id.handicapMode: // handles check box for disabled mode
+                if(checked) {// refer routing algorithm to alternate node map
+                    Toast.makeText(this, "Disabled mode would be on", Toast.LENGTH_SHORT).show();
+                } else {// have routing algorithm refer to normal node map
+                    Toast.makeText(this, "Disabled mode would be off", Toast.LENGTH_SHORT).show();
+                } break;
+            case R.id.overlayToggle: // handles check box for toggle overlay
+                if (checked) { //have overlay be on
+                    Toast.makeText(this, "One moment...", Toast.LENGTH_SHORT).show();
+                    placeOverlay();
+                } else { //have overlay be off
+                    csulbOverlay.remove();
+                }
+
         }
-    }
-//  a copycat for onSearch(), but for setting the user's location
-    public void changeCurrentLocation() {
-        if (path != null) {
-            path = null; //and then un-draw the path (with removePath()), and leave the marker
-            pathHandler.clearPath();
-        }
-        String current = location_tf.getText().toString().trim();
-        if (current.equals("")) { //handles empty string
-            location_tf.setError("Can't search nothing. Try searching a location.");
-        } else {
-            try { //mapPlaces finds key:location and returns a Node containing location info
-                currentLoc = mapPlaces.get(current);
-                LatLng latLng = new LatLng(currentLoc.getX(),currentLoc.getY());
-                if (user_location != null) { user_location.setPosition(latLng);
-                    user_location.setTitle(currentLoc.getLabel());
-                } else
-                    user_location = mMap.addMarker(new MarkerOptions().position(latLng).title(currentLoc.getLabel()));
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-            } catch (Exception e) {
-                location_tf.setError("Location not found. Try another location.");
-            }   }
     }
 
 //    @Override
@@ -208,12 +220,11 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
      * ..we need to be able to handle anything that the search dialog can give
      *  -> auto-suggestions from a database?
      */
-
-    public void onSearch(View v) {
 //  searches and modifies the mapFragment such that it shows the location of the string in question on the map.
-//        if (searched_location != null) {searched_location.remove();}
+    public void onSearch(View v) {
+
         if (path != null) {
-            path = null; //and then un-draw the path (with removePath()), and leave the marker
+            path = null; // nulls and un-draws the path (with clearPath())
             pathHandler.clearPath();
         }
 
@@ -227,8 +238,9 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
                 LatLng latLng = new LatLng(searchedLoc.getX(),searchedLoc.getY());
                 if (searched_location != null) { searched_location.setPosition(latLng);
                     searched_location.setTitle(searchedLoc.getLabel());
-                } else
-                    searched_location = mMap.addMarker(new MarkerOptions().position(latLng).title(searchedLoc.getLabel()));
+                } else // 'else' is called on first press in activity run
+                    searched_location = mMap.addMarker(new MarkerOptions()
+                            .position(latLng).title(searchedLoc.getLabel()));
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             } catch (Exception e) { //what happens when location is not in the hashmap? this does
                 location_tf.setError("Location not found. Try another location.");
@@ -237,20 +249,21 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
     //event handler for route button, finds shortest path from current location to searched location
     public void onRoute() {
-//        Toast.makeText(this, "A route goes from where you are to where you want to go", Toast.LENGTH_SHORT).show();
+//        findCurrentLocation();
+        if(route.latitude<=33.788763 && route.longitude>=-118.122509 // checks if
+                && route.latitude>=33.775236 && route.longitude<=-118.108002) {
 
-//        Node currentLoc = mapPlaces.get("ECS");
-        // placeholder, user's currentLocation will replace this
-        findCurrentLocation();
-        if(route.latitude<=33.788763 && route.longitude>=-118.122509 && route.latitude>=33.775236 && route.longitude<=-118.108002) {
-            if (myLocation != null)
-                currentLoc.setCoordinates(myLocation.getLatitude(), myLocation.getLongitude());
-            else
-                Toast.makeText(this, "Please Enable Location Services, defaulting to ECS", Toast.LENGTH_LONG).show();
+            try { currentLoc.setCoordinates(myLocation.getLatitude(), myLocation.getLongitude());
+            }catch (Exception e) {
+                Toast.makeText(this, "Please Enable Location Services", Toast.LENGTH_LONG).show();
+                return;
+            } Log.i("MapFragActivity", "myLocation - userLat: " + userLat + ", userLong: " + userLong);
+
             if (path != null) {
                 path = null; //and then un-draw the path (with removePath()), and leave the marker
                 pathHandler.clearPath();
             }
+
             try {
                 path = Node.getPath(currentLoc, searchedLoc);
                 pathHandler = new PathHandler(path, mMap);
@@ -259,8 +272,9 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             } catch (Exception e) {
                 location_tf.setError("We need your location and the location you want to go to.");
                 e.printStackTrace();
+                return;
             }
-        }else{
+        } else{
             Toast.makeText(this, "Get on campus to route", Toast.LENGTH_LONG).show();
         }
     } // only navigates while user's currentLocation is within CSULB_bounds (endgame)
@@ -268,32 +282,76 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
     // event handler for location button, finds current location using UserLocation
     public void findCurrentLocation() {
         //user location
-       // userLocation = new UserLocation(getApplicationContext());
+//        userLocation = new UserLocation(getApplicationContext());
 
         myLocation = userLocation.getLocation(); //get location coordinates
-        if (myLocation != null) {
+        try {
             userLat = myLocation.getLatitude();
             userLong = myLocation.getLongitude();
-            Log.i("findCurrentLocation", "userLat: " + userLat + ", userLong: " + userLong);
+            Log.i("MapFragActivity", "myLocation - userLat: " + userLat + ", userLong: " + userLong);
 
             currentLoc.setCoordinates(userLat, userLong); //updates currentLoc coordinates
 
             LatLng latLng = new LatLng(userLat, userLong); //updates currentLoc marker (user_location)
-            route = new LatLng(userLat, userLong);
-            if (user_location != null) user_location.setPosition(latLng);
-            else
+//            route = new LatLng(userLat, userLong);
+            route = latLng;
+            if (user_location != null) {user_location.setPosition(latLng); user_location.setTitle("You are here");}
+            else {
                 user_location = mMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title("You are Here")
+                        .position(latLng).title("You are Here").anchor(0.5f,0.5f)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.target_location)));
-        attempt = 0;} else {
-            attempt++;
-            if (attempt == 1) {
-                Toast.makeText(this, "Loading User Location", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Please Enable Location Services", Toast.LENGTH_LONG).show();
+            } Toast.makeText(this, "Loading User Location", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Please Enable Location Services", Toast.LENGTH_LONG).show();}
+    }
 
-        }   }
+    //  event handler that sets the search entry as the user's location
+    public void changeCurrentLocation() {
+        if (path != null) {
+            path = null; //and then un-draw the path (with removePath()), and leave the marker
+            pathHandler.clearPath();
+        }
+        String current = location_tf.getText().toString().trim();
+        if (!current.equals("")) { //handles empty string
+            try { //mapPlaces finds key:location and returns a Node containing location info
+                currentLoc = mapPlaces.get(current);
+                LatLng latLng = new LatLng(currentLoc.getX(),currentLoc.getY());
+
+                route = latLng;
+                if (user_location != null) { user_location.setPosition(latLng);
+                    user_location.setTitle(currentLoc.getLabel());
+                } else
+                    user_location = mMap.addMarker(new MarkerOptions()
+                            .position(latLng).title(currentLoc.getLabel()).anchor(0.5f,0.5f)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.target_location)));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            } catch (Exception e) {
+                location_tf.setError("Location not found. Try another location.");
+            }   }
+        else {
+            if (searchedLoc != null) { //replace currentLoc with searchedLoc
+                Node temp = searchedLoc; searchedLoc = null; currentLoc = temp;
+                        LatLng latLng = new LatLng(currentLoc.getX(), currentLoc.getY());
+                route = latLng;
+                // replace red marker with headhunter marker
+                user_location.setPosition(latLng);
+                user_location.setTitle(currentLoc.getLabel());
+                user_location.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.target_location));
+//                } else
+//                    user_location = mMap.addMarker(new MarkerOptions()
+//                            .position(latLng).title(currentLoc.getLabel()).anchor(0.5f,0.5f)
+//                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.target_location)));
+//                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                searched_location.remove();
+                searched_location = null; //removes searched_location marker from mMap
+            }
+        }
+    }
+
+    public void nodeSwap (Node x, Node y) {
+        Node temp = x;
+        x = y;
+        y = temp;
     }
 
     /**
@@ -314,17 +372,17 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
         sett.setScrollGesturesEnabled(true);
         mMap.setMinZoomPreference(15.0f);
         mMap.setLatLngBoundsForCameraTarget(CSULB_Bounds);
-        LatLng CSULB = new LatLng(33.781932, -118.11535);
-        GroundOverlayOptions csulbMap = new GroundOverlayOptions()
-                .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016_edited_b))
-                .position(CSULB, 1570f, 1582f); //add overlay
-        mMap.addGroundOverlay(csulbMap);
+
+        placeOverlay();
+        Log.i("MapFragActivity", "overlay added");
+
         mMap.animateCamera(CameraUpdateFactory.newLatLng(CSULB));
 
         Toast.makeText(this, "Press and hold buttons for more information", Toast.LENGTH_SHORT).show();
         Toast.makeText(this, "Press and hold search box to clear entry", Toast.LENGTH_SHORT).show();
 
         findCurrentLocation(); //after instantiation with initializePathOverlay(), this updates it
+
 
 //        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
 //                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
@@ -335,25 +393,33 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 //        mMap.setMyLocationEnabled(true);   // something to look at
     }
 
+    public void placeOverlay() {
+        csulbOverlay = mMap.addGroundOverlay(new GroundOverlayOptions()
+                .image(BitmapDescriptorFactory.fromResource(R.drawable.csulb_map2016_edited_c))
+                .position(CSULB, 1570f, 1582f));
+    }
+
     @Override
     protected void onPause() {
+//      pause services, location updating, etc
         super.onPause();
     }
     @Override
     protected void onResume() {
-
+//      resume services, location updating, etc
         super.onResume();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+//      save items and/or parcelables from the activity into the bundle for later use
         if (mMap != null) {
             outState.putParcelable("camera_position", mMap.getCameraPosition());
             outState.putString("searched_location", location_tf.getText().toString());
             super.onSaveInstanceState(outState);
         }
     }
-    @Override
+    @Override // restores items and/or parcelables sent into the bundle back into the activity
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
     }

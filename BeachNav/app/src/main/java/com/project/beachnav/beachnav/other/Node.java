@@ -132,7 +132,7 @@ public class Node {
     //Setters and getters
     public void setAdjacent(Node other) {
         adjacent.add(other);
-    }
+    } // single node
     public ArrayList<Node> getAdjacent() {
         return adjacent;
     }

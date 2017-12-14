@@ -1,55 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
-    android:translationY="-2dp">
+    android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="48dp"
+    <Button
+        android:id="@+id/setCurrentLoc"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:layout_weight="20"
-        android:background="@color/colorPrimary"
-        android:freezesText="true"
-        android:hint="@string/search_hint"
-        android:imeOptions="actionSearch"
-        android:inputType="text"
-        android:maxLines="1"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="55dp"
+        android:backgroundTint="@color/colorPrimary"
         android:onClick="onClick"
-        android:paddingBottom="11dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:paddingTop="12dp"
+        android:text="Set"
+        android:drawableEnd="@android:drawable/ic_menu_mylocation"
         android:textColor="@color/colorAccent"
-        android:textColorHint="@color/colorAccent"
-        android:translationY="2dp"
-        android:visibility="visible"
-        android:longClickable="true"/>
+        android:translationY="5dp" />
 
-    <Button
-        android:id="@+id/route"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:backgroundTint="@color/colorPrimary"
-        android:drawableStart="@android:drawable/ic_menu_directions"
-        android:onClick="onClick"
-        android:translationX="1dp"
-        android:longClickable="true" />
-    <!--the routing method goes here-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="bottom"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/location"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:layout_weight="0.5"
-        android:backgroundTint="@color/colorPrimary"
-        android:drawableStart="@android:drawable/ic_menu_mylocation"
-        android:longClickable="true" />
-    <!--android:onClick="findLocation" -->
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_weight="20"
+            android:background="@color/colorPrimary"
+            android:freezesText="true"
+            android:hint="@string/search_hint"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:longClickable="true"
+            android:maxLines="1"
+            android:onClick="onClick"
+            android:paddingBottom="11dp"
+            android:paddingEnd="10dp"
+            android:paddingStart="10dp"
+            android:paddingTop="12dp"
+            android:textColor="@color/colorAccent"
+            android:textColorHint="@color/colorHint"
+            android:translationY="3dp"
+            android:visibility="visible" />
 
-</LinearLayout>
+        <!--the routing method goes here-->
+
+        <Button
+            android:id="@+id/location"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:backgroundTint="@color/colorPrimary"
+            android:drawableStart="@android:drawable/ic_menu_mylocation"
+            android:longClickable="true"
+            android:onClick="onClick"
+            android:translationX="1dp" />
+
+        <Button
+            android:id="@+id/route"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:backgroundTint="@color/colorPrimary"
+            android:drawableStart="@android:drawable/ic_menu_directions"
+            android:longClickable="true"
+            android:onClick="onClick" />
+        <!--android:onClick="findLocation" -->
+    </LinearLayout>
+
+
+</RelativeLayout>
