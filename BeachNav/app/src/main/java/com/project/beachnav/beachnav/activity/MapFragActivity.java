@@ -247,13 +247,19 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
             }   }
     }
 
-    //event handler for route button, finds shortest path from current location to searched location
+    /***
+     * IN ORDER TO ROUTE target location has to have adjacency nodes set and these nodes need to eventually connect to nodes adjacent to the users current location.
+     * If not it will eventually get stuck looking for more nodes that shorten the path, constantly adding the same node (the last node that shortened the path).
+     *
+     * Since the group didn't set too many adjacent nodes for already created building nodes, paths are limited. If we were able to lay many more nodes around
+     * csulb and for every node set 4+ adjacent nodes (all directions) pathing would be much more accurate
+     */
     public void onRoute() {
-//        findCurrentLocation();
-        if(route.latitude<=33.788763 && route.longitude>=-118.122509 // checks if
+        findCurrentLocation();
+        if(route.latitude<=33.788763 && route.longitude>=-118.122509 // checks if on csulb campus
                 && route.latitude>=33.775236 && route.longitude<=-118.108002) {
 
-            try { currentLoc.setCoordinates(myLocation.getLatitude(), myLocation.getLongitude());
+            try { currentLoc.setCoordinates( myLocation.getLatitude(),myLocation.getLongitude());
             }catch (Exception e) {
                 Toast.makeText(this, "Please Enable Location Services", Toast.LENGTH_LONG).show();
                 return;
@@ -266,9 +272,18 @@ public class MapFragActivity extends FragmentActivity implements OnMapReadyCallb
 
             try {
                 path = Node.getPath(currentLoc, searchedLoc);
+
                 pathHandler = new PathHandler(path, mMap);
                 pathHandler.genVisualPath();
-                pathHandler.show();
+                //Make sure path is a real path
+                if (path.size()>=100) {
+                    //if it got find adjancency nodes
+                    path = null;
+                    pathHandler.clearPath();
+                    Toast.makeText(this, "More locations and paths will be added soon", Toast.LENGTH_LONG).show();
+                }else{
+                    pathHandler.show();
+                }
             } catch (Exception e) {
                 location_tf.setError("We need your location and the location you want to go to.");
                 e.printStackTrace();
