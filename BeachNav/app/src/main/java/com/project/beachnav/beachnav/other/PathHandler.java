@@ -31,24 +31,28 @@ public class PathHandler {
     }
 
     public void show() {
-        lineToDraw.width(5);
-        lineToDraw.visible(true);
+            lineToDraw.width(5);
+            lineToDraw.visible(true);
     }
 
     public void genVisualPath(){
-        lineToDraw.color(Color.CYAN);
-        Node[] nodeArr = new Node[spath.size()];
-        int w = 0;
-        for (Node n : spath) {
-            nodeArr[w] = n; w++;
-        } for (int i = 0; i < nodeArr.length; i++) { //Iterates through nodeArr to create Location ArrayList
-            Location toAdd = new Location(""); //Provider is unnecessary for this method
-            toAdd.setLatitude(nodeArr[i].getX()); //uses Node x value for latitude
-            toAdd.setLongitude(nodeArr[i].getY()); //uses Node y value for longitude
-            drawnLocs.add(toAdd);
-        } for (Location drawn : drawnLocs) { //Draws through LatLng objects created from location arrlist
-            lineToDraw.add(new LatLng(drawn.getLatitude(), drawn.getLongitude()));
-        } p = gmap.addPolyline(lineToDraw);
+            lineToDraw.color(Color.CYAN);
+            Node[] nodeArr = new Node[spath.size()];
+            int w = 0;
+            for (Node n : spath) {
+                nodeArr[w] = n;
+                w++;
+            }
+            for (int i = 0; i < nodeArr.length; i++) { //Iterates through nodeArr to create Location ArrayList
+                Location toAdd = new Location(""); //Provider is unnecessary for this method
+                toAdd.setLatitude(nodeArr[i].getX()); //uses Node x value for latitude
+                toAdd.setLongitude(nodeArr[i].getY()); //uses Node y value for longitude
+                drawnLocs.add(toAdd);
+            }
+            for (Location drawn : drawnLocs) { //Draws through LatLng objects created from location arrlist
+                lineToDraw.add(new LatLng(drawn.getLatitude(), drawn.getLongitude()));
+            }
+            p = gmap.addPolyline(lineToDraw);
     }
 
     public void clearPath() {
