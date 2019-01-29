@@ -71,7 +71,10 @@ public class BNMapFragment extends Fragment implements OnMapReadyCallback {
     public void dropLocationMarker(Node location) {
         if (m != null) {m.remove();}
         LatLng latLng = new LatLng(location.getX(),location.getY());
-        m = mMap.addMarker(new MarkerOptions().position(latLng).title(location.getLabel()));
+        m = mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title(location.getLabel())
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.target_location)));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 

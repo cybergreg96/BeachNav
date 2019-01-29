@@ -16,5 +16,7 @@
 
     <!--<include layout="@layout/search_bar"/>-->
     <include layout="@layout/search_box"/>
+    <include layout="@layout/dev_mode"/>
+
 
 </RelativeLayout>

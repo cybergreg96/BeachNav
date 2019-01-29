@@ -5,5 +5,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="background">#444440</color> <!--The color used in drawable/splash-->
-    <color name="colorTrade">#FF4081</color>
+    <color name="colorHint">#bca3ac</color>
 </resources>
